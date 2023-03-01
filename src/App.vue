@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex bg-slate-300">
+  <div class="h-full w-full flex bg-slate-300 font-['Montserrat']">
     <nav class="w-2/12 flex flex-col bg-slate-200 gap-5">
       <div class="h-1/5 flex">logo</div>
       <div class="h-4/5">
@@ -31,13 +31,19 @@
         </ul>
       </div>
     </nav>
-    <main class="w-10/12">
-      <div class="flex justify-between items-center bg-slate-200 px-6 py-4">
+    <main class="w-10/12 h-full">
+      <div class="h-[9%] flex justify-between items-center bg-slate-200 px-6">
         <div class="w-9/12">
-          <div class="rounded-[5px] border-[1px] border-slate-400 bg-slate-50 w-5/12">
-            <input class="p-1 rounded-[5px] border-slate-400 bg-slate-50 w-11/12 focus:outline-none" type="text" placeholder="Поиск" />
+          <div
+            class="rounded-[5px] border-[1px] border-slate-400 bg-slate-50 w-5/12"
+          >
+            <input
+              class="p-1 rounded-[5px] border-slate-400 bg-slate-50 w-11/12 focus:outline-none"
+              type="text"
+              placeholder="Поиск"
+            />
             <button class="ml-2">
-              <img src="./assets/search.png" width="18" height="18">
+              <img src="./assets/search.png" width="18" height="18" />
             </button>
           </div>
         </div>
@@ -48,7 +54,9 @@
             width="40px"
             height="40px"
           />
-          <a class="flex items-center bg-slate-200 p-2 rounded-[5px] hover:bg-slate-100 transition-[background-color] ease-out cursor-pointer">
+          <a
+            class="flex items-center bg-slate-200 p-2 rounded-[5px] hover:bg-slate-100 transition-[background-color] ease-out cursor-pointer"
+          >
             <div class="mx-2" href="#">KYRLUL KYRLUKOVICH</div>
             <div>
               <svg
@@ -69,7 +77,27 @@
           </a>
         </div>
       </div>
-      <div></div>
+      <div class="flex h-[91%]">
+        <div class="border-[1px] border-slate-100 w-9/12 px-6 py-4">
+          <div class="flex justify-between">
+            <div>
+              <h2 class="text-lg font-medium opacity-50">Сегодня</h2>
+              <h1 class="text-2xl font-semibold">2 Февраля, 2023</h1>
+            </div>
+            <div>
+              <select name="categories" class="p-2 rounded-[5px]">
+                <option value="">Срочные</option>
+                <option value="">Невыполненые</option>
+                <option value="">Просроченые</option>
+                <option value="">Выполненые</option>
+                <option value="">В процессе</option>
+              </select>
+            </div>
+          </div>
+          <div></div>
+        </div>
+        <div class="w-2/12"></div>
+      </div>
     </main>
   </div>
 </template>
