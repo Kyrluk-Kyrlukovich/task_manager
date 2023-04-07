@@ -16,7 +16,8 @@
       </div>
       <div class="flex gap-x-3 items-center">
         <div><img src="../assets/wall_clock.png" width="30" height="30"></div>
-        <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">10 апр 2023</div>
+        <div @click="openCalendar = true" class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">10 апр 2023</div>
+        <SmallCalendar v-if="openCalendar" @closeSmallCalendar="closeSmallCalendar" class="absolute left-[100px] top-[150px]"/>
         <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">00:00</div>
       </div>
       <div class="flex gap-x-4">
@@ -50,12 +51,25 @@
 </template>
 
 <script>
+import SmallCalendar from "@/components/SmallCalendar";
+
 export default {
   name: "ModalCreateTask",
+  components: {SmallCalendar},
+
+  data() {
+    return {
+      openCalendar: false,
+    }
+  },
 
   methods: {
     closeModalWindow() {
       this.$emit('closeModalWindow')
+    },
+
+    closeSmallCalendar() {
+      this.openCalendar = false;
     }
   }
 }

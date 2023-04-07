@@ -39,7 +39,7 @@
       </div>
     </div>
   </div>
-  <ModalCreateTask v-show="showModal" @closeModalWindow="closeModalWindow" ref="modal"/>
+  <ModalCreateTask v-show="showModal" @closeModalWindow="closeModalWindow"/>
 </template>
 
 <script>
@@ -98,6 +98,7 @@ export default {
 
     this.updateCalendar();
 
+    console.log(this.fetchTask());
 
     for (let i = 1; i <= 23; i++) {
       if (i < 10) {
@@ -119,6 +120,18 @@ export default {
   },
 
   methods: {
+
+    async fetchTask() {
+      let response = await fetch('http://taskmanager/public/api/tasks', {
+        method:'GET',
+      });
+      let json = response.json();
+      json.then(function(result) {
+        console.log(result) // "Some User token"
+      })
+      return json;
+    },
+
     showModalWindow() {
       this.showModal = true;
     },
@@ -135,7 +148,6 @@ export default {
       store.commit('previousMonth');
     },
     updateCalendar() {
-      console.log(this.month);
       let date = [];
       this.firstDayOfMonth = new Date(this.year, this.month).getDay();
       this.firstDayOfMonth == 0 ? this.firstDayOfMonth = 6 : this.firstDayOfMonth -= 1;
@@ -153,24 +165,24 @@ export default {
           if(i == 0) {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month});
+              arr.push({numDay:dateCurrentMonth, statusMonth: "month", month: this.month});
             } else { //Записывает конец прошлого месяца
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
-              arr.push({numDay:date, statusMonth: "previousMonth",  month: this.month});
+              arr.push({numDay:date, statusMonth: "previousMonth", month: this.month});
 
             }
           } else if (i == 4) {
-            if(j <= this.lastDayOfMonth) {//Записывает конец текущего месяца
+            if(j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  currMonth: this.month});
+              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month});
             } else {//Записывает начало следующего месяца
               dateStartNextMonth+=1;
-              arr.push({numDay:dateStartNextMonth, statusMonth: "nextMonth",  currMonth: this.month});
+              arr.push({numDay:dateStartNextMonth, statusMonth: "nextMonth",  month: this.month});
             }
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
-            arr.push({numDay:dateCurrentMonth, statusMonth: "month",  currMonth: this.month});
+            arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month});
           }
 
         }
