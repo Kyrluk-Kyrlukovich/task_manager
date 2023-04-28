@@ -16,14 +16,21 @@
       </div>
       <div class="flex gap-x-3 items-center">
         <div><img src="../assets/wall_clock.png" width="30" height="30"></div>
-        <div @click="openCalendar = true" class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">10 апр 2023</div>
-        <SmallCalendar v-if="openCalendar" @closeSmallCalendar="closeSmallCalendar" class="absolute left-[100px] top-[150px]"/>
-        <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">00:00</div>
+        <div @click="openCalendar" class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out">
+          {{ chooseDateTask.day }} {{ this.shortedNameMonths[chooseDateTask.month]}} {{ chooseDateTask.year }}
+        </div>
+        <SmallCalendar v-if="isCalendar" @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"
+                       class="absolute left-[100px] top-[150px]"/>
+        <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] ease-out" @click="openTime"
+        >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minute }}
+        </div>
+        <small-choose-time v-if="isTime" @closeSmallTime="closeSmallTime"  @chooseTime="chooseTime"/>
       </div>
       <div class="flex gap-x-4">
         <div class="p-2">Выбор цвета:</div>
-        <div class="rounded p-2 hover:bg-slate-300 flex gap-x-2 items-center">
-          <div class="w-[20px] h-[20px] bg-red-500 rounded-[50%]"></div>
+        <div class="rounded p-2 hover:bg-slate-300 flex gap-x-2 items-center" @click="openOrCloseColorTask">
+          <div class="w-[20px] h-[20px] rounded-[50%]" :class="[`bg-[#${choosenColor}]`]">
+          </div>
           <div>
             <svg width="13" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -32,6 +39,7 @@
             </svg>
           </div>
         </div>
+        <small-color-task class="absolute top-[190px] left-[170px]" @chooseColor="chooseColor" v-if="isColor"/>
       </div>
       <div class="flex gap-x-3 items-center p-2">
         <div class="self-start">
@@ -52,24 +60,84 @@
 
 <script>
 import SmallCalendar from "@/components/SmallCalendar";
+import store from "@/store";
+import smallChooseTime from "@/components/smallChooseTime";
+import smallColorTask from "@/components/SmallColorTask";
 
 export default {
   name: "ModalCreateTask",
-  components: {SmallCalendar},
+  components: {SmallCalendar, smallChooseTime, smallColorTask},
 
   data() {
     return {
-      openCalendar: false,
+      isCalendar: false,
+      isTime: false,
+      isColor: false,
+      chooseDateTask: '',
+      choosenColor: 'c70500',
+      chooseTimeTask: {hour: 12, minute: '00'},
+      shortedNameMonths: [
+        'Янв',
+        'Фев',
+        'Март',
+        'Апр',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Авг',
+        'Сен',
+        'Окт',
+        'Нояб',
+        'Дек',
+      ],
     }
   },
 
+  created() {
+    this.chooseDateTask = {day: store.state.date.getDate(), month:store.state.date.getMonth(), year:store.state.date.getFullYear()};
+  },
+
   methods: {
+    openTime() {
+      this.isCalendar = false;
+      this.isColor = false;
+      this.isTime = true;
+    },
+
+    chooseTime(time) {
+      this.chooseTimeTask = time;
+    },
+
+    closeSmallTime() {
+      this.isTime = false
+    },
+
     closeModalWindow() {
       this.$emit('closeModalWindow')
     },
+    
+    openCalendar() {
+      this.isTime = false;
+      this.isColor = false;
+      this.isCalendar = true;
+    },
 
     closeSmallCalendar() {
-      this.openCalendar = false;
+      this.isCalendar = false;
+    },
+    chooseDate(date) {
+      this.chooseDateTask = `${date.day} ${this.shortedNameMonths[date.month]} ${date.year}`
+      this.chooseDateTask = date
+    },
+
+    chooseColor(tag) {
+      this.choosenColor = tag
+    },
+
+    openOrCloseColorTask() {
+      this.isCalendar = false;
+      this.isTime = false;
+      this.isColor = this.isColor ? false : true;
     }
   }
 }

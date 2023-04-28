@@ -24,15 +24,10 @@
               @click="showModalWindow"
               class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
           >
-            <div class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
-              <div class="absolute p-1">safsfsdfsdsdf</div>
+            <div v-for="task in item.tasks" :key="task.id" class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
+              <div class="absolute p-1">{{ task['head_task'] }}</div>
               <div class="bg-lime-400 h-full rounded-r-[7px] opacity-25"></div>
             </div>
-            <div class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
-              <div class="absolute p-1">safsfsdfsdsdf</div>
-              <div class="bg-lime-400 h-full rounded-r-[7px] opacity-25"></div>
-            </div>
-
             <div class="h-[20%] w-full text-right mt-auto">{{item.numDay}}</div>
           </div>
         </div>
@@ -46,6 +41,7 @@
 import ModalCreateTask from "@/components/ModalCreateTask";
 import DateFilter from "@/components/DateFilter";
 import store from "@/store";
+import {mapState, mapActions} from 'vuex';
 
 export default {
   name: "CalendarTasks",
@@ -61,9 +57,12 @@ export default {
       },
       date: [],
       time: [],
+
       showModal: false,
+
       currDay: new Date().getDate(),
       currMonth: new Date().getMonth(),
+
       month: '',
       year: '',
       firstDayOfMonth: '',
@@ -83,6 +82,8 @@ export default {
   },
 
   created() {
+    this.fetchData({url:'tasks', method:'get', body:{}, nameMutation:'loadTasks'});
+
     this.month = store.state.month;
     this.year = store.state.year;
     store.subscribe((mutation) => {
@@ -95,42 +96,29 @@ export default {
       }
 
     })
-
     this.updateCalendar();
 
-    console.log(this.fetchTask());
-
-    for (let i = 1; i <= 23; i++) {
-      if (i < 10) {
-        this.time.push(`0${i}:00`);
-      } else {
-        this.time.push(`${i}:00`);
-      }
-
-      if (i === 23) {
-        this.time.push("00:00");
-      }
-    }
   },
 
   computed: {
+    ...mapState({
+      tasks: state => state.tasks,
+      isLoadingTasks: state => state.isLoadingTasks
+    }),
+
     CheckCurrMonth() {
-      return this.updateCalendar();
-    }
+      let calendar = this.updateCalendar();
+      if(!this.isLoadingTasks) {
+        this.daysTasks(calendar)
+      }
+      return calendar;
+    },
   },
 
   methods: {
-
-    async fetchTask() {
-      let response = await fetch('http://taskmanager/public/api/tasks', {
-        method:'GET',
-      });
-      let json = response.json();
-      json.then(function(result) {
-        console.log(result) // "Some User token"
-      })
-      return json;
-    },
+    ...mapActions({
+      fetchData: 'fetchData'
+    }),
 
     showModalWindow() {
       this.showModal = true;
@@ -147,6 +135,7 @@ export default {
     previousMonth() {
       store.commit('previousMonth');
     },
+
     updateCalendar() {
       let date = [];
       this.firstDayOfMonth = new Date(this.year, this.month).getDay();
@@ -165,30 +154,45 @@ export default {
           if(i == 0) {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month", month: this.month});
+              arr.push({numDay:dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year, tasks: []});
             } else { //Записывает конец прошлого месяца
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
-              arr.push({numDay:date, statusMonth: "previousMonth", month: this.month});
+              arr.push({numDay:date, statusMonth: "previousMonth", month: this.month, year: this.year, tasks: []});
 
             }
           } else if (i == 4) {
             if(j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month});
+              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month, year: this.year, tasks: []});
             } else {//Записывает начало следующего месяца
               dateStartNextMonth+=1;
-              arr.push({numDay:dateStartNextMonth, statusMonth: "nextMonth",  month: this.month});
+              arr.push({numDay:dateStartNextMonth, statusMonth: "nextMonth",  month: this.month, year: this.year, tasks: []});
             }
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
-            arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month});
+            arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month , year: this.year, tasks: []});
           }
 
         }
         date.push(arr);
       }
+      this.date = date;
       return date;
+    },
+
+    daysTasks(calendar) {
+      let tasks = this.tasks;
+      console.log(this.tasks)
+      calendar.forEach( week => {
+        week.forEach( day => {
+          let dayTasks = tasks.filter(
+              task => +task['date_start'].day == day.numDay && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
+          );
+          day.tasks = dayTasks
+        })
+      })
+      return calendar
     }
   }
 }

@@ -45,6 +45,7 @@
         <div
             v-for="item in items"
             :key="item"
+            @click="chooseDate"
             :class=classObject(item)
             class="flex flex-col justify-start"
         >
@@ -85,6 +86,20 @@ export default {
         'Ноябрь',
         'Декабрь',
       ],
+      shortedNameMonths: [
+        'Янв',
+        'Фев',
+        'Март',
+        'Апр',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Авг',
+        'Сен',
+        'Окт',
+        'Нояб',
+        'Дек',
+      ],
       days: [
         'Пн',
         'Вт',
@@ -94,7 +109,8 @@ export default {
         'Сб',
         'Вс'
       ],
-      date: [],
+      date: '',
+      choosenDate: '',
       currDay: new Date().getDate(),
       currMonth: new Date().getMonth(),
       month: '',
@@ -128,6 +144,21 @@ export default {
   },
 
   methods: {
+    chooseDate(evt) {
+      let data = JSON.parse(JSON.stringify(this.date));
+      let choosenDate;
+      for(let i = 0; i < data.length; i++) {
+         for(let j = 0; j < 7; j++) {
+           let tempDay = data[i][j];
+           if(tempDay.numDay == evt.target.textContent) {
+             choosenDate = {day: tempDay.numDay, month: tempDay.month, year: tempDay.year}
+             this.choosenDate = choosenDate;
+           }
+         }
+      }
+      this.$emit('chooseDate', this.choosenDate);
+    },
+
     closeSmallCalendar() {
       this.$emit('closeSmallCalendar');
     },
@@ -168,29 +199,30 @@ export default {
           if (i == 0) {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month});
+              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
             } else { //Записывает конец прошлого месяца
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
-              arr.push({numDay: date, statusMonth: "previousMonth", month: this.month});
+              arr.push({numDay: date, statusMonth: "previousMonth", month: this.month, year: this.year});
 
             }
           } else if (i == 4) {
             if (j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month});
+              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
             } else {//Записывает начало следующего месяца
               dateStartNextMonth += 1;
-              arr.push({numDay: dateStartNextMonth, statusMonth: "nextMonth", month: this.month});
+              arr.push({numDay: dateStartNextMonth, statusMonth: "nextMonth", month: this.month, year: this.year});
             }
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
-            arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month});
+            arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
           }
 
         }
         date.push(arr);
       }
+      this.date = date;
       return date;
     }
   }

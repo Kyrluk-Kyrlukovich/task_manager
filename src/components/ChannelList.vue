@@ -1,8 +1,6 @@
 <template>
   <ul>
     <ChannelElem/>
-    <ChannelElem/>
-    <ChannelElem/>
   </ul>
 </template>
 
