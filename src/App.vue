@@ -1,10 +1,6 @@
 <template>
   <div class="h-full w-full flex bg-slate-300 font-mont">
-    <NavMenu/>
-    <main class="w-10/12 h-full">
-      <MainTop/>
-      <MainBottom/>
-    </main>
+      <router-view></router-view>
   </div>
 </template>
 
@@ -18,19 +14,14 @@
 </style>
 
 <script>
-import NavMenu from "@/components/NavMenu";
-import MainTop from "@/components/MainTop";
-import MainBottom from "@/components/MainBottom";
 
 export default {
   name: "App",
-  components: { NavMenu, MainTop, MainBottom },
+  components: { },
 
 
   data() {
     return {
-      date: [],
-      time: [],
     };
   },
 };

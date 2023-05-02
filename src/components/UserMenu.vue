@@ -3,10 +3,11 @@
     <img
         class="mx-5"
         src="../assets/user.png"
-        width="40px"
-        height="40px"
+        width="40"
+        height="40"
     />
     <a
+        @click="openOrCloseProfile"
         class="flex items-center bg-slate-200 p-2 rounded-[5px] hover:bg-slate-100 transition-[background-color] ease-out cursor-pointer"
     >
       <div class="mx-2" href="#">KYRLUL KYRLUKOVICH</div>
@@ -27,12 +28,34 @@
         </svg>
       </div>
     </a>
+    <ProfileModal class="absolute right-[100px] w-[230px] top-[65px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)]" v-if="isProfileModal"/>
   </div>
 </template>
 
 <script>
+import ProfileModal from "@/components/ProfileModal";
+import {mapState, mapMutations} from "vuex";
+
 export default {
-  name: "UserMenu"
+  name: "UserMenu",
+  components: {ProfileModal},
+
+  computed: {
+    ...mapState({
+      isProfileModal: state => state.isProfileModal
+    })
+  },
+
+  methods: {
+    ...mapMutations({
+      openProfileModal: 'openProfileModal',
+      closeProfileModal: 'closeProfileModal',
+    }),
+
+    openOrCloseProfile() {
+      this.isProfileModal ? this.closeProfileModal() : this.openProfileModal();
+    }
+  }
 }
 </script>
 

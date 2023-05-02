@@ -1,13 +1,13 @@
 <template>
   <div class="flex h-[91%]">
     <div
-        class=" w-9/12 px-6 py-4 flex gap-y-10 flex-wrap"
+        class=" w-9/12 px-6 flex gap-y-10 flex-wrap"
     >
       <CalendarTasks/>
     </div>
-    <div class="w-3/12 p-2 flex flex-wrap">
-      <ChoosenDate/>
-      <ListTasks/>
+    <div class="w-3/12 flex flex-wrap">
+      <ChoosenDate class="h-[10%]"/>
+      <ListTasks class="h-[89%]"/>
     </div>
   </div>
 </template>

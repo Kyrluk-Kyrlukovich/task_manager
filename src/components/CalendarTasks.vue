@@ -7,7 +7,8 @@
       >
         <div v-for="(day, idx) in days"
              :key="idx"
-             class="flex items-center justify-center">{{day}}</div>
+             class="flex items-center justify-center">{{ day }}
+        </div>
       </div>
       <div
           class="grid grid-cols-1 grid-rows-5 h-[91%] bg-slate-200 rounded-b-[15px]"
@@ -24,11 +25,12 @@
               @click="showModalWindow"
               class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
           >
-            <div v-for="task in item.tasks" :key="task.id" class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
+            <div v-for="task in item.tasks" :key="task.id"
+                 class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
               <div class="absolute p-1">{{ task['head_task'] }}</div>
               <div class="bg-lime-400 h-full rounded-r-[7px] opacity-25"></div>
             </div>
-            <div class="h-[20%] w-full text-right mt-auto">{{item.numDay}}</div>
+            <div class="h-[20%] w-full text-right mt-auto">{{ item.numDay }}</div>
           </div>
         </div>
       </div>
@@ -66,23 +68,22 @@ export default {
       month: '',
       year: '',
       firstDayOfMonth: '',
-      lastDayOfMonth:  '',
+      lastDayOfMonth: '',
       lastDayOfLastMonth: '',
 
       days: [
-          'Понедельник',
-          'Вторник',
-          'Среда',
-          'Четверг',
-          'Пятница',
-          'Суббота',
-          'Воскресенье'
+        'Понедельник',
+        'Вторник',
+        'Среда',
+        'Четверг',
+        'Пятница',
+        'Суббота',
+        'Воскресенье'
       ],
     };
   },
 
   created() {
-    this.fetchData({url:'tasks', method:'get', body:{}, nameMutation:'loadTasks'});
 
     this.month = store.state.month;
     this.year = store.state.year;
@@ -90,7 +91,7 @@ export default {
       if (mutation.type == 'nextMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
-      } else if(mutation.type == 'previousMonth') {
+      } else if (mutation.type == 'previousMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
       }
@@ -108,9 +109,7 @@ export default {
 
     CheckCurrMonth() {
       let calendar = this.updateCalendar();
-      if(!this.isLoadingTasks) {
-        this.daysTasks(calendar)
-      }
+      this.daysTasks(calendar)
       return calendar;
     },
   },
@@ -144,34 +143,64 @@ export default {
       this.lastDayOfMonth = new Date(this.year, this.month + 1, 0).getDay();
       this.lastDayOfMonth == 0 ? this.lastDayOfMonth = 6 : this.lastDayOfMonth -= 1;
 
-      let dateCurrentMonth = new Date(this.year, this.month+1).getDate() - 1;
-      let dateStartNextMonth = new Date(this.year, this.month+2).getDate() - 1;
+      let dateCurrentMonth = new Date(this.year, this.month + 1).getDate() - 1;
+      let dateStartNextMonth = new Date(this.year, this.month + 2).getDate() - 1;
 
       for (let i = 0; i < 5; i++) {
         let firstDayOfMonth = this.firstDayOfMonth - 1;
         let arr = [];
         for (let j = 0; j < 7; j++) {
-          if(i == 0) {
+          if (i == 0) {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year, tasks: []});
+              arr.push({
+                numDay: dateCurrentMonth,
+                statusMonth: "month",
+                month: this.month,
+                year: this.year,
+                tasks: []
+              });
             } else { //Записывает конец прошлого месяца
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
-              arr.push({numDay:date, statusMonth: "previousMonth", month: this.month, year: this.year, tasks: []});
+              arr.push({
+                numDay: date,
+                statusMonth: "previousMonth",
+                month: this.month - 1,
+                year: this.year,
+                tasks: []
+              });
 
             }
           } else if (i == 4) {
-            if(j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
+            if (j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month, year: this.year, tasks: []});
+              arr.push({
+                numDay: dateCurrentMonth,
+                statusMonth: "month",
+                month: this.month,
+                year: this.year,
+                tasks: []
+              });
             } else {//Записывает начало следующего месяца
-              dateStartNextMonth+=1;
-              arr.push({numDay:dateStartNextMonth, statusMonth: "nextMonth",  month: this.month, year: this.year, tasks: []});
+              dateStartNextMonth += 1;
+              arr.push({
+                numDay: dateStartNextMonth,
+                statusMonth: "nextMonth",
+                month: this.month + 1,
+                year: this.year,
+                tasks: []
+              });
             }
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
-            arr.push({numDay:dateCurrentMonth, statusMonth: "month",  month: this.month , year: this.year, tasks: []});
+            arr.push({
+              numDay: dateCurrentMonth,
+              statusMonth: "month",
+              month: this.month,
+              year: this.year,
+              tasks: []
+            });
           }
 
         }
@@ -183,9 +212,8 @@ export default {
 
     daysTasks(calendar) {
       let tasks = this.tasks;
-      console.log(this.tasks)
-      calendar.forEach( week => {
-        week.forEach( day => {
+      calendar.forEach(week => {
+        week.forEach(day => {
           let dayTasks = tasks.filter(
               task => +task['date_start'].day == day.numDay && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
           );

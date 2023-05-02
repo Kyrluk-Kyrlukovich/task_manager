@@ -3,9 +3,9 @@
       class=" flex flex-wrap p-3 h-[120px] bg-slate-200 w-[100px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
     <div v-for="color in colorsTasks" :key="color.id" class="w-1/2 flex justify-center">
       <div
-          @click="chooseColor(color.tag)"
+          @click="chooseColor(color)"
           class="w-[20px] h-[20px] rounded-[50%] hover:scale-[1.15] transition-[transform] ease-in hover:cursor-pointer"
-          :class="[`bg-[#${color.tag}]`]">
+          :class="[color.color]">
       </div>
     </div>
   </div>
@@ -22,13 +22,19 @@ export default {
   },
 
   created() {
-    this.fetchData({url: 'task-color', method: 'get', body: {}, nameMutation: 'loadColorsTask'})
   },
 
   computed: {
     ...mapState({
-      colorsTasks: state => state.colorsTasks
-    })
+      colorsTasks: state => state.colorsTasks,
+      token: state => state.token
+    }),
+
+    // bgColorAndImage: function () {
+    //   return {
+    //
+    //   }
+    // },
   },
 
   methods: {
@@ -36,13 +42,35 @@ export default {
       fetchData: 'fetchData'
     }),
 
-    chooseColor(tag) {
-      this.$emit('chooseColor', tag);
+    chooseColor(color) {
+      this.$emit('chooseColor', color);
     }
   }
 }
 </script>
 
 <style scoped>
+.black {
+  background-color: #000000;
+}
 
+.red {
+  background-color: #8B0000;
+}
+
+.green {
+  background-color: #008000;
+}
+
+.orange {
+  background-color: #FFA500;
+}
+
+.blue {
+  background-color: #1E90FF;
+}
+
+.purple {
+  background-color: #800080;
+}
 </style>

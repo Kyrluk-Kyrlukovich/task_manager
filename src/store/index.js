@@ -1,104 +1,136 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex'
 
 export default createStore({
-  state: {
-    date: new Date(),
-    currDay: new Date().getDate(),
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-    tasks: [],
-    colorsTasks: [],
-    isLoadingTasks:true
-  },
-  getters: {
-  },
-  mutations: {
-    currDay(state) {
-      state.currDay = state.date.getDate();
+    state: {
+        isAuth: false,
+        token: '',
+        date: new Date(),
+        currDay: new Date().getDate(),
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+        tasks: [],
+        channels: [],
+        colorsTasks: [],
+        statusesTasks: [],
+        defaultColor: 'black',
+        isLoadingTasks: true,
+        isProfileModal: false,
     },
-    month(state) {
-      state.month = state.date.getMonth();
-    },
-    year(state) {
-      state.year = state.date.getFullYear();
-    },
-    nextMonth(state) {
-      if(state.month === 11) {
-        state.year += 1;
-        state.month = 0;
-      } else {
-        state.month += 1;
-      }
-    },
-    previousMonth(state) {
-      if (state.month === 0) {
-        state.month = 11;
-        state.year -= 1;
-      } else {
-        state.month -= 1;
-      }
-    },
+    getters: {},
+    mutations: {
+        currDay(state) {
+            state.currDay = state.date.getDate();
+        },
+        month(state) {
+            state.month = state.date.getMonth();
+        },
+        year(state) {
+            state.year = state.date.getFullYear();
+        },
+        nextMonth(state) {
+            if (state.month === 11) {
+                state.year += 1;
+                state.month = 0;
+            } else {
+                state.month += 1;
+            }
+        },
+        previousMonth(state) {
+            if (state.month === 0) {
+                state.month = 11;
+                state.year -= 1;
+            } else {
+                state.month -= 1;
+            }
+        },
 
-    loadTasks(state, data) {
-      state.tasks = [];
-      data.forEach( el => {
-        state.tasks.push(el)
-      })
-    },
+        openProfileModal(state) {
+            state.isProfileModal = true
+        },
 
-    loadColorsTask(state, data) {
-      state.colorsTasks = [];
-      data.forEach( el => {
-        state.colorsTasks.push(el)
-      })
-    },
+        closeProfileModal(state) {
+            state.isProfileModal = false
+        },
 
-    isLoadingTasks(state, boolean) {
-      state.isLoadingTasks = boolean
-    }
-  },
-  actions: {
-    async fetchData({commit}, params) {
-      let urlFetch = `http://taskmanager/api/${params.url}`
-      try {
-        commit('isLoadingTasks', true);
-        let response;
-        if(params.method == 'get') {
-          response = await fetch(urlFetch, {
-            method: params.method,
-          });
-        } else {
-          response = await fetch(urlFetch, {
-            method: params.method,
-            body: params.body
-          });
-        }
+        loadTasks(state, data) {
+            state.tasks = [];
+            data.forEach(el => {
+                state.tasks.push(el)
+            })
+        },
 
-        let data = await response.json();
-        commit(params.nameMutation, data.data);
-      } catch (e) {
-        alert(e);
-      } finally {
-        commit('isLoadingTasks', false);
-      }
-    },
+        loadStatusesTasks(state, data) {
+            state.statusesTasks = [];
+            data.forEach(el => {
+                state.statusesTasks.push(el)
+            })
+        },
 
-    async fetchChannel({commit}) {
-      try {
-        commit('isLoadingTasks', true);
-        let response = await fetch('http://taskmanager/api/tasks', {
-          method:'GET',
-        });
-        let data = await response.json();
-        commit('loadTasks', data.data);
-      } catch (e) {
-        alert(e);
-      } finally {
-        commit('isLoadingTasks', false);
-      }
+        loadColorsTask(state, data) {
+            state.colorsTasks = [];
+            data.forEach(el => {
+                state.colorsTasks.push(el)
+            })
+        },
+
+        isLoading(state, boolean) {
+            state.isLoading = boolean
+        },
+
+        login(state, data) {
+            state.token = data.token;
+            state.isAuth = true;
+        },
+
+        logout(state) {
+            state.token = '';
+            state.isAuth = false;
+        },
+
+        loadChannels(state, data) {
+            state.channels = [];
+            data.forEach( channel => {
+                state.channels.push(channel)
+            })
+        },
 
     },
-  },
-  modules: {
-  }
+    actions: {
+        async fetchData({commit}, params) {
+            let urlFetch = `http://taskmanager/api/${params.url}`
+            let headers = {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Authorization': `Bearer ${params.token}`
+            }
+            try {
+                commit('isLoading', true);
+                let response;
+                if (params.method == 'get') {
+                    response = await fetch(urlFetch, {
+                        method: params.method,
+                        headers: headers,
+                    });
+                } else {
+                    response = await fetch(urlFetch, {
+                        method: params.method,
+                        headers: headers,
+                        body: JSON.stringify(params.body)
+                    });
+                }
+
+                let data = await response.json();
+                if (params.nameMutation) {
+                    commit(params.nameMutation, data.data);
+                }
+                return data;
+            } catch (e) {
+                alert(e);
+                return 'error'
+            } finally {
+                commit('isLoading', false);
+            }
+        },
+    },
+    modules: {}
 })

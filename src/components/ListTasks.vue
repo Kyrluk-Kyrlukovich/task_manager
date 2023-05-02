@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[82%] relative w-full overflow-hidden bg-slate-200 rounded-[10px]">
+  <div class="relative w-full overflow-hidden bg-slate-200 rounded-[10px]">
     <div
         class="overflow-y-scroll absolute w-full p-5 flex flex-wrap max-h-[100%]"
     >
