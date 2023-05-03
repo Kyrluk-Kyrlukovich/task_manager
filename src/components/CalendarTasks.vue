@@ -22,7 +22,7 @@
               v-for="item in items"
               :key="item"
               :class=classObject(item)
-              @click="showModalWindow"
+              @click="showDayWithTask(item)"
               class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
           >
             <div v-for="task in item.tasks" :key="task.id"
@@ -30,7 +30,7 @@
               <div class="absolute p-1">{{ task['head_task'] }}</div>
               <div class="bg-lime-400 h-full rounded-r-[7px] opacity-25"></div>
             </div>
-            <div class="h-[20%] w-full text-right mt-auto">{{ item.numDay }}</div>
+            <div class="h-[20%] w-full text-right mt-auto">{{ item.day }}</div>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@
 import ModalCreateTask from "@/components/ModalCreateTask";
 import DateFilter from "@/components/DateFilter";
 import store from "@/store";
-import {mapState, mapActions} from 'vuex';
+import {mapState, mapActions, mapMutations, mapGetters} from 'vuex';
 
 export default {
   name: "CalendarTasks",
@@ -54,7 +54,7 @@ export default {
     return {
       classObject: function (item) {
         return {
-          "bg-blue-200": item.numDay == this.currDay && item.statusMonth == 'month' && item.month == this.currMonth ? true : false,
+          "bg-blue-200": item.day == this.currDay && item.statusMonth == 'month' && item.month == this.currMonth ? true : false,
         }
       },
       date: [],
@@ -107,17 +107,32 @@ export default {
       isLoadingTasks: state => state.isLoadingTasks
     }),
 
+    ...mapGetters({
+      formatDate: 'formatDate',
+      formatTime: 'formatTime'
+    }),
+
     CheckCurrMonth() {
       let calendar = this.updateCalendar();
-      this.daysTasks(calendar)
+      console.log(this.daysTasks(calendar));
       return calendar;
     },
   },
 
   methods: {
+    ...mapMutations({
+      fillNewTasks: 'fillNewTasks',
+      clearTasks: 'clearTasks'
+    }),
+
     ...mapActions({
       fetchData: 'fetchData'
     }),
+
+    showDayWithTask(date) {
+      this.clearTasks();
+      this.fillNewTasks({date:date})
+    },
 
     showModalWindow() {
       this.showModal = true;
@@ -154,7 +169,7 @@ export default {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
               arr.push({
-                numDay: dateCurrentMonth,
+                day: dateCurrentMonth,
                 statusMonth: "month",
                 month: this.month,
                 year: this.year,
@@ -164,7 +179,7 @@ export default {
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
               arr.push({
-                numDay: date,
+                day: date,
                 statusMonth: "previousMonth",
                 month: this.month - 1,
                 year: this.year,
@@ -176,7 +191,7 @@ export default {
             if (j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
               dateCurrentMonth += 1;
               arr.push({
-                numDay: dateCurrentMonth,
+                day: dateCurrentMonth,
                 statusMonth: "month",
                 month: this.month,
                 year: this.year,
@@ -185,7 +200,7 @@ export default {
             } else {//Записывает начало следующего месяца
               dateStartNextMonth += 1;
               arr.push({
-                numDay: dateStartNextMonth,
+                day: dateStartNextMonth,
                 statusMonth: "nextMonth",
                 month: this.month + 1,
                 year: this.year,
@@ -195,7 +210,7 @@ export default {
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
             arr.push({
-              numDay: dateCurrentMonth,
+              day: dateCurrentMonth,
               statusMonth: "month",
               month: this.month,
               year: this.year,
@@ -211,16 +226,16 @@ export default {
     },
 
     daysTasks(calendar) {
+      console.log(this.tasks);
       let tasks = this.tasks;
       calendar.forEach(week => {
         week.forEach(day => {
           let dayTasks = tasks.filter(
-              task => +task['date_start'].day == day.numDay && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
+              task => +task['date_start'].day == day.day && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
           );
           day.tasks = dayTasks
         })
       })
-      return calendar
     }
   }
 }

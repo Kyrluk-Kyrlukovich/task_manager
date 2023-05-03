@@ -85,7 +85,7 @@
 
 <script>
 import SmallCalendar from "@/components/SmallCalendar";
-import {mapState, mapActions} from "vuex";
+import {mapState, mapActions, mapGetters} from "vuex";
 import SmallChooseTime from "@/components/SmallChooseTime";
 import SmallColorTask from "@/components/SmallColorTask";
 import SmallStatus from "@/components/SmallStatus";
@@ -104,7 +104,7 @@ export default {
       textTask: '',
       chooseStatusTask: {id_status: 1, name_status: 'Срочно и важно'},
       chooseDateTask: '',
-      chooseColorTask: {id_task_color:1, color:'black', tag:'c70500'},
+      chooseColorTask: {id:1, color:'black', tag:'c70500'},
       chooseTimeTask: {hour: 12, minute: '00'},
       shortedNameMonths: [
         'Янв',
@@ -136,6 +136,11 @@ export default {
       defaultColor: state => state.defaultColor,
       statusesTasks: state => state.statusesTasks,
       token: state => state.token
+    }),
+
+    ...mapGetters({
+      formatDate: 'formatDate',
+      formatTime: 'formatTime'
     })
   },
 
@@ -158,22 +163,11 @@ export default {
           head_task: this.headTask,
           date_start: date,
           id_status: this.chooseStatusTask['id_status'],
-          id_task_color: this.chooseColorTask['id_task_color']
+          id_task_color: this.chooseColorTask.id
         },
         token: this.token,
         nameMutation: null,
       })
-    },
-
-    formatDate(date) {
-      let day = `${date.day}`.length == 1 ? '0' + date.day : date.day;
-      let month = `${date.month}`.length == 1 ? '0' + date.month : date.month;
-      return `${day}.${month}.${date.year}`;
-    },
-
-    formatTime(time) {
-      let hour = `${time}`.length == 1 ? '0' + time.hour : time.hour;
-      return `${hour}:${time.minute}`
     },
 
     openTime() {

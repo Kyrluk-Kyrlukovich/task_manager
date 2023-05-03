@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapState, mapMutations} from "vuex";
 import store from "@/store";
 
 export default {
@@ -26,45 +26,39 @@ export default {
 
   data() {
     return {
-      time: [],
+      localTime: []
     };
   },
 
   created() {
     store.subscribe((mutation) => {
       if (mutation.type == 'loadTasks') {
-        this.fillNewTasks(this.tasks);
+        this.fillNewTasks({date:this.chooseDate})
       }
     })
+    if(!this.chooseDate) {
+      this.changeChoosenDate({day: this.currDay, month: this.month, year:this.year})
+    }
     this.fillTime();
   },
 
   computed: {
     ...mapState({
-      tasks: state => state.tasks
-    })
+      tasks: state => state.tasks,
+      currDay: state => state.currDay,
+      month: state => state.month,
+      year: state => state.year,
+      chooseDate: state => state.chooseDate,
+      time: state => state.time,
+    }),
   },
 
   methods: {
-    fillNewTasks(newValue) {
-      newValue.forEach(task => {
-        this.time.forEach(el => {
-          if(+task['date_start'].hour == el.hour && +task['date_start'].minutes == el.minute) {
-            el.task = task;
-          }
-        })
-      })
-    },
-
-    fillTime() {
-      for (let i = 1; i <= 23; i++) {
-        let hour = i;
-        for(let j = 1; j <= 2; j++) {
-          let minute = j == 1 ? '00' : '30';
-          this.time.push({hour:hour, minute:minute, task:''})
-        }
-      }
-    }
+    ...mapMutations({
+      changeChoosenDate: 'changeChoosenDate',
+      fillTime: 'fillTime',
+      fillNewTasks: 'fillNewTasks'
+    }),
   }
 }
 </script>

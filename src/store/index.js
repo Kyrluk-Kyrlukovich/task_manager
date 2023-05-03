@@ -9,14 +9,30 @@ export default createStore({
         month: new Date().getMonth(),
         year: new Date().getFullYear(),
         tasks: [],
+        time: [],
         channels: [],
         colorsTasks: [],
         statusesTasks: [],
         defaultColor: 'black',
+        chooseDate: null,
         isLoadingTasks: true,
         isProfileModal: false,
     },
-    getters: {},
+
+    getters: {
+        formatDate: () => date => {
+            let incrementMonth = date.month + 1;
+            let day = `${date.day}`.length == 1 ? '0' + date.day : date.day;
+            let month = `${incrementMonth}`.length == 1 ? '0' + incrementMonth : incrementMonth;
+            return `${day}.${month}.${date.year}`;
+          }, 
+
+          formatTime: () => time => {
+            let hour = `${time.hour}`.length == 1 ? '0' + time.hour : time.hour;
+            return `${hour}:${time.minute}`
+          },
+    },
+
     mutations: {
         currDay(state) {
             state.currDay = state.date.getDate();
@@ -93,6 +109,40 @@ export default createStore({
                 state.channels.push(channel)
             })
         },
+        
+        changeChoosenDate(state, data) {
+            state.chooseDate = data
+        },
+        
+        fillTime(state) {
+            state.time = [];
+            for (let i = 1; i <= 23; i++) {
+                let hour = i;
+                for(let j = 1; j <= 2; j++) {
+                  let minute = j == 1 ? '00' : '30';
+                  state.time.push({hour:hour, minute:minute, task:''})
+                }
+              }
+        },
+
+        fillNewTasks(state, date) {
+            let currDayTask =  state.tasks.filter(el => 
+            +el['date_start'].day == date.date.day 
+            && +el['date_start'].month == (date.date.month + 1)
+            && +el['date_start'].year == date.date.year);    
+            currDayTask.forEach(task => {
+              state.time.forEach(el => {
+                if(+task['date_start'].hour == el.hour && +task['date_start'].minutes == el.minute) {
+                  el.task = task;
+                  console.log('ElemTask', el.task);
+                }
+              })
+            })
+          },
+
+          clearTasks(state) {
+            state.time.forEach(el => el.task = '')
+          }
 
     },
     actions: {
