@@ -25,7 +25,7 @@
                        class="absolute left-[100px] top-[150px]"/>
         <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] duration-[0.25s] ease-out"
              @click="openTime"
-        >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minute }}
+        >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minutes }}
         </div>
         <small-choose-time v-if="isTime" @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
       </div>
@@ -50,7 +50,7 @@
         <div class="p-2">Выберите цвет:</div>
         <div class="rounded p-2 hover:bg-slate-300 duration-[0.25s] ease-out flex gap-x-2 items-center"
              @click="openOrCloseColorTask">
-          <div class="w-[20px] h-[20px] rounded-[50%]" :class="[chooseColorTask.color]">
+          <div class="w-[20px] h-[20px] rounded-[50%]" :class="[chooseColorTask['name_color']]">
           </div>
           <div>
             <svg width="13" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -104,8 +104,8 @@ export default {
       textTask: '',
       chooseStatusTask: {id_status: 1, name_status: 'Срочно и важно'},
       chooseDateTask: '',
-      chooseColorTask: {id:1, color:'black', tag:'c70500'},
-      chooseTimeTask: {hour: 12, minute: '00'},
+      chooseColorTask: {id_color:1, name_color:'black', tag_color:'c70500'},
+      chooseTimeTask: {hour: 12, minutes: '00'},
       shortedNameMonths: [
         'Янв',
         'Фев',
@@ -150,7 +150,7 @@ export default {
     }),
 
     createTask() {
-      let dateStart = this.formatDate(this.chooseDateTask);
+      let dateStart = this.formatDate(false, this.chooseDateTask);
       let timeStart = this.formatTime(this.chooseTimeTask)
       let date = dateStart + ' ' + timeStart;
       let idChannel = this.$route.path.slice(-1)
@@ -163,7 +163,7 @@ export default {
           head_task: this.headTask,
           date_start: date,
           id_status: this.chooseStatusTask['id_status'],
-          id_task_color: this.chooseColorTask.id
+          id_task_color: this.chooseColorTask['id_color']
         },
         token: this.token,
         nameMutation: null,
@@ -178,12 +178,13 @@ export default {
     },
 
     chooseTime(time) {
-      this.chooseTimeTask = time;
+      console.log({...time})
+      this.chooseTimeTask = {...time};
       this.isTime = false;
     },
 
     chooseStatus(status) {
-      this.chooseStatusTask = status;
+      this.chooseStatusTask = {...status};
       this.isStatus = false;
     },
 
@@ -206,12 +207,12 @@ export default {
       this.isCalendar = false;
     },
     chooseDate(date) {
-      this.chooseDateTask = date
+      this.chooseDateTask = {...date}
       this.isCalendar = false;
     },
 
     chooseColor(color) {
-      this.chooseColorTask = color
+      this.chooseColorTask = {...color}
       this.isColor = false;
     },
 

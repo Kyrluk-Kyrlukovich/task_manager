@@ -28,7 +28,7 @@
             <div v-for="task in item.tasks" :key="task.id"
                  class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
               <div class="absolute p-1">{{ task['head_task'] }}</div>
-              <div class="bg-lime-400 h-full rounded-r-[7px] opacity-25"></div>
+              <div class="h-full rounded-r-[7px] opacity-25" :class="task.color['name_color']"></div>
             </div>
             <div class="h-[20%] w-full text-right mt-auto">{{ item.day }}</div>
           </div>
@@ -36,18 +36,16 @@
       </div>
     </div>
   </div>
-  <ModalCreateTask v-show="showModal" @closeModalWindow="closeModalWindow"/>
 </template>
 
 <script>
-import ModalCreateTask from "@/components/ModalCreateTask";
 import DateFilter from "@/components/DateFilter";
 import store from "@/store";
-import {mapState, mapActions, mapMutations, mapGetters} from 'vuex';
+import {mapState, mapMutations, mapGetters} from 'vuex';
 
 export default {
   name: "CalendarTasks",
-  components: {ModalCreateTask, DateFilter},
+  components: {DateFilter},
 
 
   data() {
@@ -107,16 +105,16 @@ export default {
       isLoadingTasks: state => state.isLoadingTasks
     }),
 
-    ...mapGetters({
-      formatDate: 'formatDate',
-      formatTime: 'formatTime'
-    }),
-
     CheckCurrMonth() {
       let calendar = this.updateCalendar();
-      console.log(this.daysTasks(calendar));
+      this.daysTasks();
+      this.formatTaskHead(calendar)
       return calendar;
     },
+
+    ...mapGetters({
+      findTasks: 'findTasks'
+    })
   },
 
   methods: {
@@ -125,22 +123,23 @@ export default {
       clearTasks: 'clearTasks'
     }),
 
-    ...mapActions({
-      fetchData: 'fetchData'
-    }),
+    formatTaskHead(calendar) {
+        return  calendar.map(el =>
+          el.map(day =>
+              day.tasks.map(task => {
+                if (task['head_task'].length >= 20) {
+                  task['head_task'] = task['head_task'].substring(1, 16) + '...'
+                }
+              })
+          )
+      )
+    },
 
-    showDayWithTask(date) {
+    showDayWithTask(data) {
       this.clearTasks();
-      this.fillNewTasks({date:date})
+      this.fillNewTasks(this.findTasks(data.tasks))
     },
 
-    showModalWindow() {
-      this.showModal = true;
-    },
-
-    closeModalWindow() {
-      this.showModal = false;
-    },
 
     nextMonth() {
       store.commit('nextMonth');
@@ -225,15 +224,14 @@ export default {
       return date;
     },
 
-    daysTasks(calendar) {
-      console.log(this.tasks);
-      let tasks = this.tasks;
-      calendar.forEach(week => {
+    daysTasks() {
+      let tasks = JSON.parse(JSON.stringify(this.tasks));
+      this.date.forEach(week => {
         week.forEach(day => {
           let dayTasks = tasks.filter(
               task => +task['date_start'].day == day.day && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
           );
-          day.tasks = dayTasks
+          day.tasks = [...dayTasks]
         })
       })
     }
@@ -242,6 +240,28 @@ export default {
 </script>
 
 <style scoped>
+.black {
+  background-color: #000000;
+}
 
+.red {
+  background-color: #8B0000;
+}
+
+.green {
+  background-color: #008000;
+}
+
+.orange {
+  background-color: #FFA500;
+}
+
+.blue {
+  background-color: #1E90FF;
+}
+
+.purple {
+  background-color: #800080;
+}
 
 </style>

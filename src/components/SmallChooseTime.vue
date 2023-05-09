@@ -14,7 +14,7 @@
       <div v-for="(item, idx) in time" :key="idx"
            class="text-start p-[15px] px-[30px] text-[16px] hover:bg-slate-300 transition-[background-color] ease-out"
            @click="chooseTime">
-        {{ item.hour }}:{{ item.minute }}
+        {{ item.hour }}:{{ item.minutes }}
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default {
         for (let j = 1; j <= 2; j++) {
           let minute = j == 1 ? '00' : '30';
           if(`${hour}:${minute}` == evt.target.textContent){
-            this.choosenTime = {hour:hour, minute:minute}
+            this.choosenTime = {hour:hour, minutes:minute}
           }
         }
       }
@@ -58,7 +58,7 @@ export default {
         let hour = i;
         for (let j = 1; j <= 2; j++) {
           let minute = j == 1 ? '00' : '30';
-          this.time.push({hour: hour, minute: minute})
+          this.time.push({hour: hour, minutes: minute})
         }
       }
     }

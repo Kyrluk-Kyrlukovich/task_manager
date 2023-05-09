@@ -1,0 +1,280 @@
+<template>
+  <div
+      class=" absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200 max-h-[495px] h-full max-w-[370px] w-full">
+    <div class="h-full w-full grid grid-cols-1 gap-[15px] px-6 py-8">
+      <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
+        <h3>Заголовок:</h3>
+        <input class="rounded-[5px] p-2 h-[30px] w-full disabled:bg-slate-200" type="text"
+               v-model="task['head_task']"
+               :disabled="isDisabled">
+      </div>
+      <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
+        <div><img src="../assets/wall_clock.png" alt=""></div>
+        <div @click="openOrCloseModalTime" class="rounded-[5px] p-1 h-[30px] bg-slate-200" :class="editClass">
+          {{ dateStartFormat }}
+        </div>
+        <small-choose-time v-if="isTimeModal" @closeSmallTime="closeModalTime" @chooseTime="chooseTime"/>
+      </div>
+      <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
+        <h3>Статус:</h3>
+        <div @click="openOrCloseModalStatus" class="rounded-[5px] p-1 h-[30px] bg-slate-200" :class="editClass">{{
+            task.status['name_status']
+          }}
+        </div>
+        <small-status v-if="isStatusModal" @chooseStatus="chooseStatus" class="absolute"/>
+      </div>
+      <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
+        <h3>Цвет:</h3>
+        <div @click="openOrCloseModalColor" class="flex gap-[10px] items-center rounded-[5px] p-1" :class="editClass">
+          <div class="rounded-[50%] p-1 bg-slate-200 w-[20px] h-[20px]" :class="task.color['name_color']"></div>
+          <div v-if="isEditTask">
+            <svg width="13" height="12" viewBox="0 0 22 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                  d="M20.7989 0.899445L11.6065 10.0918C11.216 10.4824 10.5828 10.4824 10.1923 10.0918L0.999896 0.899445"
+                  stroke="#535353" stroke-width="3"/>
+            </svg>
+          </div>
+          <small-color-task v-if="isColorModal" @chooseColor="chooseColor" class="absolute left-[150px] top-[250px]"/>
+        </div>
+      </div>
+      <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
+        <div><img src="../assets/icon_description_task.svg" alt=""></div>
+        <textarea v-model="task['text_task']" class="resize-none w-full rounded-[10px] p-2 disabled:bg-slate-200"
+                  :disabled="isDisabled"></textarea>
+      </div>
+      <div class="grid grid-cols-1">
+        <button @click="onEditTask"
+                v-if="!isEditTask"
+                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Изменить
+        </button>
+        <button @click="closeModalShowTask"
+                v-if="!isEditTask"
+                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Закрыть
+        </button>
+        <button @click="offEditTask"
+                v-if="isEditTask"
+                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Отменить
+        </button>
+        <button @click="updateTask"
+                v-if="isEditTask"
+                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Сохранить
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {mapActions, mapGetters, mapState} from "vuex";
+import SmallColorTask from "@/components/SmallColorTask";
+import SmallChooseTime from "@/components/SmallChooseTime";
+import SmallStatus from "@/components/SmallStatus";
+import store from "@/store";
+
+export default {
+  name: "ModalShowTask",
+  components: {SmallColorTask, SmallChooseTime, SmallStatus},
+
+  data() {
+    return {
+      isDisabled: true,
+      isEditTask: false,
+      isColorModal: false,
+      isTimeModal: false,
+      isStatusModal: false,
+      task: null
+    }
+  },
+
+  created() {
+    store.subscribe((mutation) => {
+      if (mutation.type == 'changeChoosenTask') {
+        this.task = {...this.choosenTask}
+      }
+    })
+
+    if(!this.task) {
+      this.task = {...this.choosenTask}
+    }
+
+    this.fetchData({url: 'task-color', method: 'get', body: {}, token: null, nameMutation: 'loadColorsTask'})
+    this.fetchData({url: 'statuses', method: 'get', body: {}, token: null, nameMutation: 'loadStatusesTasks'})
+  },
+
+  computed: {
+    ...mapState({
+      choosenTask: state => state.choosenTask,
+      token: state => state.token,
+      isAuth: state => state.isAuth
+    }),
+
+    ...mapGetters({
+      formatDate: 'formatDate',
+      formatTime: 'formatTime'
+    }),
+
+    dateStartFormat() {
+      if(this.task) {
+        console.log(this.task,this.task['date_start'])
+       return `${this.task['date_start'].hour}:${this.task['date_start'].minutes}`;
+      }
+      return 'null'
+    },
+
+    editClass() {
+      if (this.isEditTask) {
+        return ['hover:bg-slate-300', 'transition-[background-color]', 'duration-[0.25s]', 'ease-out', 'cursor-pointer', 'w-fit', 'px-3']
+      }
+      return false
+    }
+  },
+
+  methods: {
+    ...mapActions({
+      fetchData:'fetchData'
+    }),
+
+    async updateTask() {
+      if(this.isAuth) {
+        let dateStart = this.formatDate(true, this.task['date_start']);
+        let timeStart = this.formatTime(this.task['date_start'])
+        let date = dateStart + ' ' + timeStart;
+        console.log(date)
+        let path = this.$route.path.slice(1, this.$route.path.length)
+
+        await this.fetchData({
+          url: path,
+          method: 'post',
+          body: {
+            id_task: this.task['id_task'],
+            head_task: this.task['head_task'],
+            text_task: this.task['text_task'],
+            date_start: date,
+            id_status: this.task.status['id_status'],
+            id_task_color: this.task.color['id_color'],
+          },
+          token: this.token,
+          nameMutation: 'changeChoosenTask'
+        })
+
+        await this.fetchData({
+          url: path,
+          method: 'get',
+          body: null,
+          token: this.token,
+          nameMutation: 'loadTasks'
+        })
+        this.onDisable();
+        this.offEditTask();
+      }
+    },
+
+    offDisable() {
+      this.isDisabled = false
+    },
+
+    onDisable() {
+      this.isDisabled = true
+    },
+
+    onEditTask() {
+      this.isEditTask = true
+      this.offDisable()
+    },
+
+    offEditTask() {
+      this.isEditTask = false
+      this.onDisable()
+      this.closeModalTime()
+      this.closeModalStatus()
+      this.closeModalColor()
+      this.task = {...this.choosenTask}
+    },
+
+    closeModalShowTask() {
+      this.$emit('closeModalShowTask')
+    },
+
+    openOrCloseModalTime() {
+      if (this.isEditTask) {
+        this.isTimeModal = this.isTimeModal ? false : true
+        this.isStatusModal = false
+        this.isColorModal = false
+      }
+    },
+    openOrCloseModalStatus() {
+      if (this.isEditTask) {
+        this.isStatusModal = this.isStatusModal ? false : true
+        this.isTimeModal = false
+        this.isColorModal = false
+      }
+    },
+
+    openOrCloseModalColor() {
+      if (this.isEditTask) {
+        this.isColorModal = this.isColorModal ? false : true
+        this.isTimeModal = false
+        this.isStatusModal = false
+      }
+    },
+
+    closeModalTime() {
+      this.isTimeModal = false
+    },
+
+    closeModalStatus() {
+      this.isStatusModal = false
+    },
+
+    closeModalColor() {
+      this.isColorModal = false
+    },
+
+    chooseTime(time) {
+      this.task['date_start'].hour = time.hour
+      this.task['date_start'].minutes = time.minute
+      this.closeModalTime()
+    },
+
+    chooseStatus(status) {
+      this.task.status = status
+      this.closeModalStatus()
+    },
+
+    chooseColor(color) {
+      this.task.color = color
+      this.closeModalColor()
+    }
+  }
+}
+</script>
+
+<style scoped>
+.black {
+  background-color: #000000;
+}
+
+.red {
+  background-color: #8B0000;
+}
+
+.green {
+  background-color: #008000;
+}
+
+.orange {
+  background-color: #FFA500;
+}
+
+.blue {
+  background-color: #1E90FF;
+}
+
+.purple {
+  background-color: #800080;
+}
+</style>

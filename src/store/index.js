@@ -4,33 +4,52 @@ export default createStore({
     state: {
         isAuth: false,
         token: '',
+
         date: new Date(),
         currDay: new Date().getDate(),
         month: new Date().getMonth(),
         year: new Date().getFullYear(),
+
         tasks: [],
         time: [],
+        dayListTasks: [],
         channels: [],
         colorsTasks: [],
         statusesTasks: [],
         defaultColor: 'black',
+
         chooseDate: null,
+        choosenTask: null,
+
         isLoadingTasks: true,
         isProfileModal: false,
     },
 
     getters: {
-        formatDate: () => date => {
-            let incrementMonth = date.month + 1;
-            let day = `${date.day}`.length == 1 ? '0' + date.day : date.day;
-            let month = `${incrementMonth}`.length == 1 ? '0' + incrementMonth : incrementMonth;
-            return `${day}.${month}.${date.year}`;
-          }, 
+        formatDate: () => (isIncremented, date) => {
+            let corretedMonth = isIncremented ? date.month : +date.month + 1
 
-          formatTime: () => time => {
+            let day = `${date.day}`.length == 1 ? '0' + date.day : date.day;
+            let month = `${corretedMonth}`.length == 1 ? '0' + corretedMonth : corretedMonth;
+            return `${day}.${month}.${date.year}`;
+        },
+
+        formatTime: () => time => {
             let hour = `${time.hour}`.length == 1 ? '0' + time.hour : time.hour;
-            return `${hour}:${time.minute}`
-          },
+            return `${hour}:${time.minutes}`
+        },
+
+        findTasks: (state) => data => {
+            let findedTasks = []
+            state.tasks.forEach(task => {
+                data.forEach(calendarTask => {
+                    if(task['id_task'] == calendarTask['id_task']) {
+                        findedTasks.push(task)
+                    }
+                })
+            })
+            return findedTasks
+        },
     },
 
     mutations: {
@@ -68,6 +87,47 @@ export default createStore({
             state.isProfileModal = false
         },
 
+        changeChoosenDate(state, data) {
+            state.chooseDate = data
+        },
+
+        fillTime(state) {
+            state.time = [];
+            for (let i = 1; i <= 23; i++) {
+                let hour = i;
+                for (let j = 1; j <= 2; j++) {
+                    let minute = j == 1 ? '00' : '30';
+                    state.time.push({hour: hour, minute: minute, task: ''})
+                }
+            }
+        },
+
+        fillNewTasks(state, data) {
+            data.forEach(task => state.dayListTasks.push(task))
+        },
+
+        clearTasks(state) {
+            state.dayListTasks = []
+        },
+
+        isLoading(state, boolean) {
+            state.isLoading = boolean
+        },
+
+        changeChoosenTask(state, task) {
+            state.choosenTask = task
+        },
+
+        login(state, data) {
+            state.token = data.token;
+            state.isAuth = true;
+        },
+
+        logout(state) {
+            state.token = '';
+            state.isAuth = false;
+        },
+
         loadTasks(state, data) {
             state.tasks = [];
             data.forEach(el => {
@@ -89,60 +149,12 @@ export default createStore({
             })
         },
 
-        isLoading(state, boolean) {
-            state.isLoading = boolean
-        },
-
-        login(state, data) {
-            state.token = data.token;
-            state.isAuth = true;
-        },
-
-        logout(state) {
-            state.token = '';
-            state.isAuth = false;
-        },
-
         loadChannels(state, data) {
             state.channels = [];
-            data.forEach( channel => {
+            data.forEach(channel => {
                 state.channels.push(channel)
             })
         },
-        
-        changeChoosenDate(state, data) {
-            state.chooseDate = data
-        },
-        
-        fillTime(state) {
-            state.time = [];
-            for (let i = 1; i <= 23; i++) {
-                let hour = i;
-                for(let j = 1; j <= 2; j++) {
-                  let minute = j == 1 ? '00' : '30';
-                  state.time.push({hour:hour, minute:minute, task:''})
-                }
-              }
-        },
-
-        fillNewTasks(state, date) {
-            let currDayTask =  state.tasks.filter(el => 
-            +el['date_start'].day == date.date.day 
-            && +el['date_start'].month == (date.date.month + 1)
-            && +el['date_start'].year == date.date.year);    
-            currDayTask.forEach(task => {
-              state.time.forEach(el => {
-                if(+task['date_start'].hour == el.hour && +task['date_start'].minutes == el.minute) {
-                  el.task = task;
-                  console.log('ElemTask', el.task);
-                }
-              })
-            })
-          },
-
-          clearTasks(state) {
-            state.time.forEach(el => el.task = '')
-          }
 
     },
     actions: {
@@ -150,7 +162,6 @@ export default createStore({
             let urlFetch = `http://taskmanager/api/${params.url}`
             let headers = {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
                 'Authorization': `Bearer ${params.token}`
             }
             try {

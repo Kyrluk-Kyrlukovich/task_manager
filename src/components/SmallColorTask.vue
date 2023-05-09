@@ -1,11 +1,11 @@
 <template>
   <div
       class=" flex flex-wrap p-3 h-[120px] bg-slate-200 w-[100px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
-    <div v-for="color in colorsTasks" :key="color.id" class="w-1/2 flex justify-center">
+    <div v-for="color in colorsTasks" :key="color['id_color']" class="w-1/2 flex justify-center">
       <div
           @click="chooseColor(color)"
           class="w-[20px] h-[20px] rounded-[50%] hover:scale-[1.15] transition-[transform] ease-in hover:cursor-pointer"
-          :class="[color.color]">
+          :class="[color['name_color']]">
       </div>
     </div>
   </div>
@@ -29,12 +29,6 @@ export default {
       colorsTasks: state => state.colorsTasks,
       token: state => state.token
     }),
-
-    // bgColorAndImage: function () {
-    //   return {
-    //
-    //   }
-    // },
   },
 
   methods: {
