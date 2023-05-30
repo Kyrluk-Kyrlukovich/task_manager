@@ -17,9 +17,17 @@ export default createStore({
         colorsTasks: [],
         statusesTasks: [],
         defaultColor: 'black',
+        usersChannel:[],
+        users: [],
+        usersFunctions:[],
 
         chooseDate: null,
         choosenTask: null,
+        choosenSettingsChannel: null,
+        choosenUserForSettings: {
+            id: '',
+            functions: []
+        },
 
         isLoadingTasks: true,
         isProfileModal: false,
@@ -56,12 +64,15 @@ export default createStore({
         currDay(state) {
             state.currDay = state.date.getDate();
         },
+
         month(state) {
             state.month = state.date.getMonth();
         },
+
         year(state) {
             state.year = state.date.getFullYear();
         },
+
         nextMonth(state) {
             if (state.month === 11) {
                 state.year += 1;
@@ -70,6 +81,7 @@ export default createStore({
                 state.month += 1;
             }
         },
+
         previousMonth(state) {
             if (state.month === 0) {
                 state.month = 11;
@@ -89,6 +101,14 @@ export default createStore({
 
         changeChoosenDate(state, data) {
             state.chooseDate = data
+        },
+
+        changeChoosenSettingsChannel(state, data) {
+            state.choosenSettingsChannel = data;
+        },
+
+        changeChoosenUserForSetting(state, data) {
+            state.choosenUserForSettings.id  = data
         },
 
         fillTime(state) {
@@ -128,10 +148,38 @@ export default createStore({
             state.isAuth = false;
         },
 
+        loadUsers(state, data) {
+            state.users = [];
+            data.forEach(el => {
+                state.users.push(el)
+            })
+        },
+
+        loadUsersFunctions(state, data) {
+            state.usersFunctions = [];
+            data.forEach(el => {
+                state.usersFunctions.push(el)
+            })
+        },
+
+        loadUserFunctions(state, data) {
+            state.choosenUserForSettings.functions = [];
+            data.forEach(el => {
+                state.usersFunctions.functions.push(el)
+            })
+        },
+
         loadTasks(state, data) {
             state.tasks = [];
             data.forEach(el => {
                 state.tasks.push(el)
+            })
+        },
+
+        loadUsersChannel(state, data) {
+            state.usersChannel = [];
+            data.users.forEach(el => {
+                state.usersChannel.push(el)
             })
         },
 

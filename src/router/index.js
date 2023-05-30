@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import LoginForm from "@/components/LoginForm";
 import MainFull from "@/components/MainFull";
 import SignupForm from "@/components/SignupForm";
+import ChannelSettings from "@/components/ChannelSettings";
 
 const routes = [
 
@@ -32,6 +33,11 @@ const routes = [
         name:'choosenDay',
         path: '/channel/:id/day',
         component: MainFull
+    },
+    {
+        name:'channelSettings',
+        path: '/channel/:id/settings',
+        component: ChannelSettings
     }
 ]
 

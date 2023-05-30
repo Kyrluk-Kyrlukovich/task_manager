@@ -149,13 +149,13 @@ export default {
       fetchData: 'fetchData'
     }),
 
-    createTask() {
+    async createTask() {
       let dateStart = this.formatDate(false, this.chooseDateTask);
       let timeStart = this.formatTime(this.chooseTimeTask)
       let date = dateStart + ' ' + timeStart;
-      let idChannel = this.$route.path.slice(-1)
+      let idChannel = this.$route.params.id
       let url = `channels/${idChannel}/create-task`
-      this.fetchData({
+      await this.fetchData({
         url: url,
         method: 'post',
         body: {
@@ -168,6 +168,7 @@ export default {
         token: this.token,
         nameMutation: null,
       })
+      this.closeModalWindow();
     },
 
     openTime() {
