@@ -9,7 +9,7 @@
     <div class="p-5 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] grid grid-cols-1 gap-3 rounded-[10px]">
       <div><img src="../assets/user.png" alt="Канал"></div>
       <div><input type="text" v-model="channelName" :disabled="!isEdit" class="rounded-[5px] p-1"></div>
-      <div v-if="!isEdit">
+      <div v-if="!isEdit && creator">
         <button
             @click="onEdit"
             class="w-[100%] h-full rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
@@ -26,14 +26,21 @@
       <div v-if="isEdit">
         <button
             @click="saveChanges"
-            class="w-[100%] h-full rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+            class="w-[100%] h-full rounded-[5px] bg-emerald-400 hover:cursor-pointer hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
         </button>
       </div>
-      <div v-if="!isEdit">
+      <div v-if="!isEdit && creator">
         <button
-            class="w-[100%] h-full rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+            class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить канал
+        </button>
+      </div>
+      <div v-if="!isEdit && !creator">
+        <button
+            @click="leaveFromChannel"
+            class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Покинуть канал
         </button>
       </div>
     </div>
@@ -44,11 +51,17 @@
           <li v-for="user in usersChannel" :key="user['id_user']"
               class="grid grid-cols-[1fr_3fr_1fr] grid-rows-2 p-5 gap-5 justify-items-center items-center hover:bg-slate-400 hover:cursor-pointer transition-[background-color] duration-[0.25s] ease-out">
             <div class="row-start-1 row-end-3"><img src="../assets/user.png" alt="Пользователь"></div>
-            <div class="row-start-1 self-end">{{ user['first_name'] }} {{ user['last_name'] }}</div>
-            <div class="row-start-1 row-end-3 self-center"><img @click="openSmallFunctions(user['id_user'], $event)"
-                                                                src="../assets/gear.png" width="32" height="32"
-                                                                alt="Настройки участника"></div>
-            <div class="self-start">{{ user['name_role'] }}</div>
+            <div :class="{'col-start-2':!creator, 'col-end-4':!creator}" class="row-start-1  self-end">
+              {{ user['first_name'] }} {{ user['last_name'] }}
+            </div>
+            <div v-if="creator" class="row-start-1 row-end-3 self-center"><img v-if="creator"
+                                                                               @click="openSmallFunctions(user['id_user'], $event)"
+                                                                               src="../assets/gear.png" width="32"
+                                                                               height="32"
+                                                                               alt="Настройки участника"></div>
+            <div :class="{'col-start-2':!creator, 'col-end-4':!creator}" class="self-start text-center">
+              {{ user['name_role'] }}
+            </div>
           </li>
           <li @click="openModalAddUserOnChannel"
               class="grid grid-cols-1 justify-items-center p-1 border border-dashed rounded-[5px] border-slate-600 hover:bg-slate-400 hover:cursor-pointer transition-[background-color] duration-[0.25s] ease-out">
@@ -59,7 +72,7 @@
     </div>
     <ModalAddUserOnChannel v-if="isModalAddUserOnChannel" @closeModalAddUserOnChannel="closeModalAddUserOnChannel"
                            class=" h-[500px] w-[500px] bg-slate-300 absolute left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
-    <div class="absolute h-[250px] w-[250px]" ref="smallFunctions">
+    <div ref="smallFunctions" class="absolute h-[250px] w-[250px] right-0 top-0">
       <SmallFunctions v-if="isAddFunctions" @closeSmallFunctions="closeSmallFunctions"
                       class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
     </div>
@@ -101,6 +114,13 @@ export default {
             token: vm.token,
             nameMutation: 'loadUsersChannel'
           })
+          vm.fetchData({
+            url: 'channel/' + vm.$route.params.id + '/creator',
+            method: 'get',
+            body: null,
+            token: vm.token,
+            nameMutation: 'loadCreator'
+          })
         }
       });
     } else {
@@ -118,6 +138,7 @@ export default {
       isAuth: state => state.isAuth,
       token: state => state.token,
       usersChannel: state => state.usersChannel,
+      creator: state => state.creatorChannel
     }),
   },
 
@@ -131,6 +152,18 @@ export default {
       fetchData: 'fetchData'
     }),
 
+    leaveFromChannel() {
+      const deleteUserFromChannelPath = (this.$route.fullPath + '/leave').slice(1)
+      this.fetchData({
+        url: deleteUserFromChannelPath,
+        method: 'get',
+        body: null,
+        token: this.token,
+        nameMutation: null
+      })
+    },
+
+
     closeSmallFunctions() {
       this.isAddFunctions = false
     },
@@ -138,6 +171,13 @@ export default {
     openSmallFunctions(id, event) {
       this.locationSmallFunction(event.clientX, event.clientY)
       this.changeChoosenUserForSetting(id)
+      this.fetchData({
+        url: `userfunctions/${this.$route.params.id}`,
+        method: 'post',
+        body: {id_user: id},
+        token: this.token,
+        nameMutation: 'loadUserFunctions'
+      })
 
       this.isAddFunctions = true
     },

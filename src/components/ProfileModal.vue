@@ -1,6 +1,6 @@
 <template>
   <div class="bg-slate-200 rounded-[5px] grid overflow-hidden">
-    <router-link to="" class="p-3 hover:bg-slate-100 transition-[background-color] ease-out rounded-top-[5px]">
+    <router-link to="profile" class="p-3 hover:bg-slate-100 transition-[background-color] ease-out rounded-top-[5px]">
       <div class="p-1">Профиль</div>
     </router-link>
     <router-link to="/" @click="logout" class="p-3 hover:bg-slate-100 transition-[background-color] ease-out">

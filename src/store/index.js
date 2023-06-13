@@ -28,6 +28,7 @@ export default createStore({
             id: '',
             functions: []
         },
+        creatorChannel: false,
 
         isLoadingTasks: true,
         isProfileModal: false,
@@ -155,6 +156,10 @@ export default createStore({
             })
         },
 
+        loadCreator(state, data) {
+            state.creatorChannel = data.creator
+        },
+
         loadUsersFunctions(state, data) {
             state.usersFunctions = [];
             data.forEach(el => {
@@ -165,7 +170,7 @@ export default createStore({
         loadUserFunctions(state, data) {
             state.choosenUserForSettings.functions = [];
             data.forEach(el => {
-                state.usersFunctions.functions.push(el)
+                state.choosenUserForSettings.functions.push(el)
             })
         },
 

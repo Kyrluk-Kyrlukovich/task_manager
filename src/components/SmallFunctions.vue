@@ -3,14 +3,25 @@
     <div class="relative overflow-hidden h-full rounded-[10px]">
       <div class="absolute overflow-y-scroll p-3 w-full max-h-[100%] min-h-[100%] grid grid-cols-1 gap-2">
         <div v-for="func in checkFunctions" :key="func['id_user_functions']" class="grid grid-cols-[8fr_1fr] py-3">
-          <div>{{func['name_function']}}</div>
+          <div>{{ func['name_function'] }}</div>
           <label class="switch">
-            <input type="checkbox" ref="check" :checked="checkFunctions.checked" name="functions" :value="func['id_user_functions']"/>
+            <input type="checkbox" ref="check" :checked="func.checked" name="functions"
+                   :value="func['id_user_functions']"/>
             <span class="slider round"></span>
           </label>
         </div>
-        <button @click="save" class="w-[100%] h-fit rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">Сохранить</button>
-        <button @click="closeSmallFunctions" class="w-[100%] h-fit rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">Отменить и Закрыть</button>
+        <button @click="deleteUserFromChannel"
+                class="w-[100%] h-fit rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Удалить из канала
+        </button>
+        <button @click="save"
+                class="w-[100%] h-fit rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Сохранить
+        </button>
+        <button @click="closeSmallFunctions"
+                class="w-[100%] h-fit rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Отменить и Закрыть
+        </button>
       </div>
     </div>
   </div>
@@ -31,20 +42,25 @@ export default {
 
     checkFunctions() {
       return this.usersFunctions.map(func => {
-          this.choosenUserForSettings.functions.forEach(userFunc => {
-            if(userFunc.function == func.function) {
-              func.checked = true
-            } else {
-              func.checked = false
-            }
-          })
+        func.checked = false
+        this.choosenUserForSettings.functions.forEach(userFunc => {
+          if (func.function == userFunc.function) {
+            func.checked = true
+          }
+        })
+        return func
       })
     }
   },
 
   created() {
-    this.fetchData({url:`userfunctions`, method: 'get', body:null, token:this.token, nameMutation: 'loadUsersFunctions'})
-    this.fetchData({url:`userfunctions/${this.$route.params.id}`, method: 'post', body:{id_user:this.choosenUserForSettings.id}, token:this.token, nameMutation: 'loadUserFunctions'})
+    this.fetchData({
+      url: `userfunctions`,
+      method: 'get',
+      body: null,
+      token: this.token,
+      nameMutation: 'loadUsersFunctions'
+    })
   },
 
   methods: {
@@ -52,12 +68,50 @@ export default {
       fetchData: 'fetchData'
     }),
 
+    deleteUserFromChannel() {
+      const deleteUserFromChannelPath = (this.$route.fullPath + '/deleteuser').slice(1)
+      const usersChannelPath = this.$route.fullPath.slice(1)
+      this.fetchData({
+        url: deleteUserFromChannelPath,
+        method: 'post',
+        body: {id_user: this.choosenUserForSettings.id},
+        token: this.token,
+        nameMutation: null
+      })
+
+      this.fetchData({
+        url: usersChannelPath,
+        method: 'get',
+        body: null,
+        token: this.token,
+        nameMutation: 'loadUsers'
+      })
+
+      this.closeSmallFunctions();
+    },
+
     closeSmallFunctions() {
       this.$emit('closeSmallFunctions')
     },
 
     save() {
-      this.$refs.check.forEach(el => console.log(el.checked, el.value))
+      const functions = this.$refs.check
+      const functionsForFetch = [];
+      for (let i = 0; i < functions.length; i++) {
+        if (functions[i].checked) {
+          functionsForFetch.push(functions[i].value)
+        }
+      }
+      console.log(functionsForFetch)
+      this.fetchData({
+        url: `channel/${this.$route.params.id}/settings/userfunctions`,
+        method: 'post',
+        body: {
+          id_user: this.choosenUserForSettings.id,
+          functions: functionsForFetch,
+        },
+        token: this.token,
+      })
     }
   }
 }

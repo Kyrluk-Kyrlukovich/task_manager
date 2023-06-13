@@ -3,6 +3,7 @@ import LoginForm from "@/components/LoginForm";
 import MainFull from "@/components/MainFull";
 import SignupForm from "@/components/SignupForm";
 import ChannelSettings from "@/components/ChannelSettings";
+import ProfilePage from "@/components/ProfilePage";
 
 const routes = [
 
@@ -38,7 +39,13 @@ const routes = [
         name:'channelSettings',
         path: '/channel/:id/settings',
         component: ChannelSettings
+    },
+    {
+        name:'profile',
+        path: '/profile',
+        component: ProfilePage
     }
+
 ]
 
 const router = createRouter({

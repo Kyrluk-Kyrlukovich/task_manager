@@ -53,9 +53,14 @@
                 class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Закрыть
         </button>
+        <button @click="deleteTask"
+                v-if="!isEditTask"
+                class="w-[100%] h-[80%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Удалить
+        </button>
         <button @click="offEditTask"
                 v-if="isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[80%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Отменить
         </button>
         <button @click="updateTask"
@@ -138,13 +143,33 @@ export default {
       fetchData:'fetchData'
     }),
 
+    async deleteTask() {
+      const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
+      const getNewTasksUrl = this.$route.fullPath.slice(1);
+      this.fetchData({
+        url:deleteTaskUrl,
+        method:'post',
+        body: {id_task:this.task['id_task']},
+        token: this.token,
+        nameMutation: null
+      })
+      this.fetchData({
+        url:getNewTasksUrl,
+        method:'get',
+        body: null,
+        token: this.token,
+        nameMutation: 'loadTasks'
+      })
+      this.closeModalShowTask()
+    },
+
     async updateTask() {
       if(this.isAuth) {
         let dateStart = this.formatDate(true, this.task['date_start']);
         let timeStart = this.formatTime(this.task['date_start'])
         let date = dateStart + ' ' + timeStart;
         console.log(date)
-        let path = this.$route.path.slice(1, this.$route.path.length)
+        let path = this.$route.path.slice(1)
 
         await this.fetchData({
           url: path,
