@@ -8,7 +8,7 @@
         <img src="../assets/user.png" width="45" height="45"/>
       </div>
       <div>{{ channel['name_channel'] }}</div>
-      <router-link :to="{name:'channelSettings', params:{id:channel['id_channel']}}" @click.stop class="ml-auto">
+      <router-link :to="{name:'channelSettings', params:{id:channel['id_channel']}}" class="ml-auto">
         <div @click="changeChoosenSettingsChannel(channel['name_channel'])" ><img src="../assets/gear.png" height="22" width="22" alt=""></div>
       </router-link>
     </li>

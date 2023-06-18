@@ -19,6 +19,7 @@ export default createStore({
         defaultColor: 'black',
         usersChannel:[],
         users: [],
+        user:[],
         usersFunctions:[],
 
         chooseDate: null,
@@ -154,6 +155,10 @@ export default createStore({
             data.forEach(el => {
                 state.users.push(el)
             })
+        },
+
+        loadInfoUser(state, data) {
+            state.user = JSON.parse(JSON.stringify(data));
         },
 
         loadCreator(state, data) {

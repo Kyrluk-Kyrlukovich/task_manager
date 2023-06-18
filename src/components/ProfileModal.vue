@@ -38,6 +38,7 @@ export default {
         token: this.token,
         nameMutation: 'logout'
       })
+      localStorage.removeItem('token')
       this.closeProfileModal()
     }
   }

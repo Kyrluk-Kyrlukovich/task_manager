@@ -15,11 +15,11 @@
       <div>
         <input type="password" v-model="password" class="p-[5px] rounded-[5px]" required placeholder="Ваш пароль"/>
       </div>
-        <button
-            @click.prevent="tryLogin"
-            class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
-          Войти
-        </button>
+      <button
+          @click.prevent="tryLogin"
+          class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+        Войти
+      </button>
       <router-link to="/signup" class="rounded-[5px]" v-if="!isAuth">
         <button
             class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "LoginForm",
@@ -45,13 +45,18 @@ export default {
 
   computed: {
     ...mapState({
-      isAuth: state => state.isAuth
+      isAuth: state => state.isAuth,
+      token: state => state.token
     })
   },
 
   methods: {
     ...mapActions({
       fetchData: 'fetchData'
+    }),
+
+    ...mapMutations({
+      login: 'login'
     }),
 
     async tryLogin() {
@@ -63,6 +68,7 @@ export default {
         nameMutation: 'login'
       })
       if (this.isAuth) {
+        localStorage.setItem('token', this.token)
         this.$router.push('/')
       }
     }

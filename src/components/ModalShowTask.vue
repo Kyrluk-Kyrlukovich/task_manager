@@ -124,7 +124,6 @@ export default {
 
     dateStartFormat() {
       if(this.task) {
-        console.log(this.task,this.task['date_start'])
        return `${this.task['date_start'].hour}:${this.task['date_start'].minutes}`;
       }
       return 'null'
