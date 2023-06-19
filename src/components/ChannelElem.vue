@@ -1,6 +1,5 @@
 <template>
-  <router-link v-for="channel in channels" :key="channel['id_channel']"
-               :to="{name:'channel', params:{id:channel['id_channel']}}">
+  <router-link :to="{name:'channel', params:{id:channel['id_channel']}}">
     <li
         class=" flex items-center gap-5 p-5 hover:bg-slate-300 transition-[background-color] ease-out"
     >
@@ -20,6 +19,10 @@ import {mapMutations, mapState} from "vuex";
 
 export default {
   name: "ChannelElem",
+
+  props: {
+    channel: Object
+  },
 
   computed: {
     ...mapState({
