@@ -70,13 +70,18 @@
         </ul>
       </div>
     </div>
-    <ModalAddUserOnChannel v-if="isModalAddUserOnChannel" @closeModalAddUserOnChannel="closeModalAddUserOnChannel"
-                           class=" h-[500px] w-[500px] bg-slate-300 absolute left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
-    <div ref="smallFunctions" class="absolute h-[250px] w-[250px] right-0 top-0">
-      <SmallFunctions v-if="isAddFunctions" @closeSmallFunctions="closeSmallFunctions"
-                      class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
-    </div>
+    <transition name="modalAddUser">
+      <div v-if="isModalAddUserOnChannel" class="h-[410px] w-[500px] overflow-hidden bg-slate-300 absolute left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]">
+        <ModalAddUserOnChannel  @closeModalAddUserOnChannel="closeModalAddUserOnChannel"/>
+      </div>
+    </transition>
   </div>
+    <transition name="modal">
+      <div v-show="isAddFunctions" ref="modal" class="absolute h-[250px] w-[250px] right-0 top-0">
+          <SmallFunctions  @closeSmallFunctions="closeSmallFunctions"
+            class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
+      </div>
+  </transition>
 </template>
 
 <script>
@@ -99,6 +104,8 @@ export default {
       isModalAddUserOnChannel: false,
       posYsmallFunction: 0,
       posXsmallFunction: 0,
+
+      choosenUser: null
     }
   },
 
@@ -168,32 +175,44 @@ export default {
       this.isAddFunctions = false
     },
 
-    openSmallFunctions(id, event) {
-      this.locationSmallFunction(event.clientX, event.clientY)
-      this.changeChoosenUserForSetting(id)
-      this.fetchData({
-        url: `userfunctions/${this.$route.params.id}`,
-        method: 'post',
-        body: {id_user: id},
-        token: this.token,
-        nameMutation: 'loadUserFunctions'
-      })
-
-      this.isAddFunctions = true
+    async openSmallFunctions(id, event) {
+      this.closeModalAddUserOnChannel();
+      if(this.isAddFunctions) {
+        if(this.choosenUser == id) {
+          this.closeSmallFunctions();
+        } else {
+          await this.closeSmallFunctions();
+          this.openSmallFunctions(id, event);
+        }
+        
+      } else {
+        this.locationSmallFunction(event.clientX, event.clientY, id)
+        this.changeChoosenUserForSetting(id)
+        this.fetchData({
+          url: `userfunctions/${this.$route.params.id}`,
+          method: 'post',
+          body: {id_user: id},
+          token: this.token,
+          nameMutation: 'loadUserFunctions'
+        })
+        this.isAddFunctions = true
+        this.choosenUser = id
+      }
+      
     },
 
     locationSmallFunction(x, y) {
-      this.$refs.smallFunctions.style.left = x + 'px'
+      const elem = this.$refs.modal.style;
+      elem.left = x + 'px';
       if (window.outerHeight < y + 250) {
-        this.$refs.smallFunctions.style.height = 250 - (y + 250 - window.innerHeight) + 'px'
-        this.$refs.smallFunctions.style.top = y - 50 + 'px'
+        elem.top = y - 50 + 'px'
       } else {
-        this.$refs.smallFunctions.style.top = y + 'px'
-        this.$refs.smallFunctions.style.height = 200 + 'px'
+        elem.top = y + 'px'
       }
     },
 
     openModalAddUserOnChannel() {
+      this.closeSmallFunctions();
       this.cancellChanges();
       this.isModalAddUserOnChannel = true
     },
@@ -226,5 +245,26 @@ export default {
 </script>
 
 <style scoped>
+  .modal-enter-active {
+  animation: open 0.7s;
+}
+.modal-leave-active {
+  animation: open 0.7s reverse;
+}
 
+.modalAddUser-enter-active {
+  animation: open 0.7s;
+}
+.modalAddUser-leave-active {
+  animation: open 0.7s reverse;
+}
+
+  @keyframes open {
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 500px;
+    }
+  }
 </style>

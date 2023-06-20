@@ -1,6 +1,5 @@
 <template>
-  <div
-      class="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200 max-h-[475px] h-full max-w-[550px] w-full">
+  <div>
     <div class="p-4 text-center flex flex-col gap-[20px] h-full">
       <div class="absolute right-4" @click="closeModalWindow">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,8 +20,12 @@
              class="p-2 hover:bg-slate-300 rounded transition-[background-color] duration-[0.25s] ease-out">
           {{ chooseDateTask.day }} {{ this.shortedNameMonths[chooseDateTask.month] }} {{ chooseDateTask.year }}
         </div>
-        <SmallCalendar v-if="isCalendar" @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"
-                       class="absolute left-[100px] top-[150px]"/>
+        <transition name="modalSmallCalendar">
+          <div v-if="isCalendar" class="absolute left-[100px] top-[150px] h-[210px] bg-slate-200 w-[300px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <SmallCalendar @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"/>
+          </div>
+        </transition>
+        
         <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] duration-[0.25s] ease-out"
              @click="openTime"
         >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minutes }}
@@ -257,4 +260,20 @@ export default {
 .purple {
   background-color: #800080;
 }
+
+.modalSmallCalendar-enter-active {
+  animation: open 0.7s;
+}
+.modalSmallCalendar-leave-active {
+  animation: open 0.7s reverse;
+}
+
+  @keyframes open {
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 475px;
+    }
+  }
 </style>

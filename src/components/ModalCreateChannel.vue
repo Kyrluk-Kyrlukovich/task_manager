@@ -6,13 +6,22 @@
         class="w-[100%] h-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
         Создать Канал
       </button>
+      <button @click="closeModalCreateChannel"
+        class="w-[100%] h-fit rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+        Отменить и Закрыть
+      </button>
   </div>
 </template>
 
 <script>
 export default {
-    name: "ModalCreateChannel"
+    name: "ModalCreateChannel",
 
+    methods: {
+      closeModalCreateChannel() {
+        this.$emit('closeModalCreateChannel')
+      }
+    }
 }
 </script>
 

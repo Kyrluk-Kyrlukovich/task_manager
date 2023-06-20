@@ -1,6 +1,5 @@
 <template>
-  <div
-      class=" absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200 max-h-[495px] h-full max-w-[370px] w-full">
+  <div>
     <div class="h-full w-full grid grid-cols-1 gap-[15px] px-6 py-8">
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
         <h3>Заголовок:</h3>
@@ -42,30 +41,30 @@
         <textarea v-model="task['text_task']" class="resize-none w-full rounded-[10px] p-2 disabled:bg-slate-200"
                   :disabled="isDisabled"></textarea>
       </div>
-      <div class="grid grid-cols-1">
+      <div class="grid grid-cols-1 gap-[5px]">
         <button @click="onEditTask"
                 v-if="!isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Изменить
         </button>
         <button @click="closeModalShowTask"
                 v-if="!isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Закрыть
         </button>
         <button @click="deleteTask"
                 v-if="!isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить
         </button>
         <button @click="offEditTask"
                 v-if="isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Отменить
         </button>
         <button @click="updateTask"
                 v-if="isEditTask"
-                class="w-[100%] h-[80%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+                class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
         </button>
       </div>

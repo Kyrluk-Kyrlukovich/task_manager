@@ -1,6 +1,6 @@
 <template>
   <div
-      class=" p-2 h-[270px] bg-slate-200 w-[300px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+      class=" p-2 text-[12px]">
     <div class="h-[10%] text-start ">
       <button @click="closeSmallCalendar">
         <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
