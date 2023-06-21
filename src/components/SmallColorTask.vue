@@ -1,6 +1,6 @@
 <template>
   <div
-      class=" flex flex-wrap p-3 h-[120px] bg-slate-200 w-[100px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+      class=" flex flex-wrap p-3 h-[120px]  w-[100px] text-[12px]  overflow-hidden">
     <div v-for="color in colorsTasks" :key="color['id_color']" class="w-1/2 flex justify-center">
       <div
           @click="chooseColor(color)"

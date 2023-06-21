@@ -10,7 +10,7 @@
         @click="openOrCloseProfile"
         class="flex items-center bg-slate-200 p-2 rounded-[5px] hover:bg-slate-100 transition-[background-color] ease-out cursor-pointer"
     >
-      <div class="mx-2" href="#">KYRLUL KYRLUKOVICH</div>
+      <div class="mx-2" href="#">{{user.firstName}} {{user.lastName}}</div>
       <div>
         <svg
             fill="none"
@@ -28,7 +28,11 @@
         </svg>
       </div>
     </a>
-    <ProfileModal class="absolute right-[100px] w-[230px] top-[65px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)]" v-if="isProfileModal"/>
+    <transition name="profileModal">
+      <div v-if="isProfileModal" class="absolute right-[100px] w-[230px] top-[65px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] overflow-hidden bg-slate-200 rounded-[5px]">
+        <ProfileModal />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -42,7 +46,8 @@ export default {
 
   computed: {
     ...mapState({
-      isProfileModal: state => state.isProfileModal
+      isProfileModal: state => state.isProfileModal,
+      user: state => state.user
     })
   },
 
@@ -60,5 +65,20 @@ export default {
 </script>
 
 <style scoped>
+  .profileModal-enter-active {
+  animation: open 0.7s;
+}
 
+.profileModal-leave-active {
+  animation: open 0.7s reverse;
+}
+
+  @keyframes open {
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 112px;
+    }
+  }
 </style>

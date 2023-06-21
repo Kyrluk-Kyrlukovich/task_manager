@@ -1,6 +1,5 @@
 <template>
-  <div
-      class=" h-[250px] bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+  <div>
     <div class="h-[10%] z-20 text-start absolute top-[5px] left-[5px]">
       <button @click="closeSmallTime">
         <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

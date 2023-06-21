@@ -30,7 +30,11 @@
              @click="openTime"
         >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minutes }}
         </div>
-        <small-choose-time v-if="isTime" @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
+        <transition name="modalSmallChooseTime">
+          <div v-if="isTime" class="h-[250px] bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <small-choose-time @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
+          </div>
+        </transition>
       </div>
       <div class="flex gap-x-4">
         <div class="p-2">Выберите статус:</div>
@@ -47,7 +51,12 @@
             </svg>
           </div>
         </div>
-        <SmallStatus class="absolute top-[190px] left-[170px]" @chooseStatus="chooseStatus" v-if="isStatus"/>
+        <transition name="smallStatus">
+          <div v-if="isStatus" class="absolute top-[200px] left-[190px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <SmallStatus @chooseStatus="chooseStatus"/>
+          </div>
+        </transition>
+        
       </div>
       <div class="flex gap-x-4">
         <div class="p-2">Выберите цвет:</div>
@@ -63,7 +72,11 @@
             </svg>
           </div>
         </div>
-        <small-color-task class="absolute top-[190px] left-[170px]" @chooseColor="chooseColor" v-if="isColor"/>
+        <transition name="smallColorTask">
+          <div v-if="isColor" class="absolute top-[260px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]" >
+            <small-color-task @chooseColor="chooseColor" />
+          </div>
+        </transition>
       </div>
       <div class="flex gap-x-3 items-center p-2">
         <div class="self-start">
@@ -261,11 +274,18 @@ export default {
   background-color: #800080;
 }
 
-.modalSmallCalendar-enter-active {
-  animation: open 0.7s;
+.modalSmallCalendar-enter-active,
+.modalSmallChooseTime-enter-active,
+.smallStatus-enter-active,
+.smallColorTask-enter-active {
+  animation: open 0.6s ease-in-out;
 }
-.modalSmallCalendar-leave-active {
-  animation: open 0.7s reverse;
+
+.modalSmallCalendar-leave-active,
+.modalSmallChooseTime-leave-active,
+.smallStatus-leave-active,
+.smallColorTask-leave-active {
+  animation: open 0.6s reverse ease-in-out;
 }
 
   @keyframes open {
@@ -273,7 +293,7 @@ export default {
       max-height: 0;
     }
     100% {
-      max-height: 475px;
+      max-height: 250px;
     }
   }
 </style>

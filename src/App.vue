@@ -15,7 +15,7 @@
 
 <script>
 
-import {mapMutations, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "App",
@@ -28,6 +28,10 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      fetchData: 'fetchData'
+    }),
+
     ...mapMutations({
       login: 'login'
     })
@@ -38,11 +42,22 @@ export default {
       const data = {token: localStorage.getItem('token')}
       this.login(data);
     }
+
+    if(this.isAuth) {
+      this.fetchData({
+            url: 'profile',
+            method: 'get',
+            body: null,
+            token: this.token,
+            nameMutation: 'loadInfoUser'
+          })
+    }
   },
 
   computed: {
     ...mapState({
       isAuth: state => state.isAuth,
+      token: state => state.token
     })
   },
 };

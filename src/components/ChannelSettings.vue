@@ -246,25 +246,34 @@ export default {
 
 <style scoped>
   .modal-enter-active {
-  animation: open 0.7s;
+  animation: open 0.7s ease-in-out;
 }
 .modal-leave-active {
-  animation: open 0.7s reverse;
+  animation: open 0.7s reverse ease-in-out;
 }
 
 .modalAddUser-enter-active {
-  animation: open 0.7s;
+  animation: openModalAddUser 0.7s ease-in-out;
 }
 .modalAddUser-leave-active {
-  animation: open 0.7s reverse;
+  animation: openModalAddUser 0.7s reverse ease-in-out;
 }
 
-  @keyframes open {
+  @keyframes openModalAddUser {
     0% {
       max-height: 0;
     }
     100% {
       max-height: 500px;
+    }
+  }
+
+    @keyframes open {
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 250px;
     }
   }
 </style>

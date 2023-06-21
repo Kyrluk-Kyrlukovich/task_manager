@@ -1,4 +1,5 @@
 import {createStore} from 'vuex'
+import axios from 'axios';
 
 export default createStore({
     state: {
@@ -187,6 +188,7 @@ export default createStore({
         },
 
         loadUsersChannel(state, data) {
+            console.log(data.data);
             state.usersChannel = [];
             data.users.forEach(el => {
                 state.usersChannel.push(el)
@@ -208,6 +210,7 @@ export default createStore({
         },
 
         loadChannels(state, data) {
+            console.log(data.data);
             state.channels = [];
             data.forEach(channel => {
                 state.channels.push(channel)
@@ -226,25 +229,33 @@ export default createStore({
                 commit('isLoading', true);
                 let response;
                 if (params.method == 'get') {
-                    response = await fetch(urlFetch, {
+                    response = await  axios({
                         method: params.method,
-                        headers: headers,
-                    });
+                        url: urlFetch,
+                        data: JSON.stringify(params.body),
+                        headers: headers});
+                    //  fetch(urlFetch, {
+                    //     method: params.method,
+                    //     headers: headers,
+                    // });
                 } else {
-                    response = await fetch(urlFetch, {
+                    response = await axios({
                         method: params.method,
-                        headers: headers,
-                        body: JSON.stringify(params.body)
-                    });
+                        url: urlFetch,
+                        data: JSON.stringify(params.body),
+                        headers: headers}); 
+                    // fetch(urlFetch, {
+                    //     method: params.method,
+                    //     headers: headers,
+                    //     body: JSON.stringify(params.body)
+                    // });
                 }
-
-                let data = await response.json();
                 if (params.nameMutation) {
-                    commit(params.nameMutation, data.data);
+                    commit(params.nameMutation, response.data.data);
                 }
-                return data;
+                return response;
             } catch (e) {
-                alert(e);
+                alert(e + params.nameMutation);
                 return 'error'
             } finally {
                 commit('isLoading', false);

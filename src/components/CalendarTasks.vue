@@ -24,6 +24,7 @@
               :class=classObject(item)
               @click="showDayWithTask(item)"
               class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
+              ref="day"
           >
             <div v-for="task in item.tasks" :key="task.id"
                  class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
@@ -82,7 +83,6 @@ export default {
   },
 
   created() {
-
     this.month = store.state.month;
     this.year = store.state.year;
     store.subscribe((mutation) => {
@@ -108,7 +108,9 @@ export default {
     CheckCurrMonth() {
       let calendar = this.updateCalendar();
       this.daysTasks();
-      this.formatTaskHead(calendar)
+      if(this.$refs.day) {
+        this.formatTaskHead(calendar, this.$refs.day[0]);
+      }
       return calendar;
     },
 
@@ -127,7 +129,8 @@ export default {
         return  calendar.map(el =>
           el.map(day =>
               day.tasks.map(task => {
-                if (task['head_task'].length >= 20) {
+                console.log(task['head_task'].length);
+                if (task['head_task'].length >= 16) {
                   task['head_task'] = task['head_task'].substring(1, 16) + '...'
                 }
               })
