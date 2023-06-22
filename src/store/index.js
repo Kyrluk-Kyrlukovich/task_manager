@@ -210,7 +210,6 @@ export default createStore({
         },
 
         loadChannels(state, data) {
-            console.log(data.data);
             state.channels = [];
             data.forEach(channel => {
                 state.channels.push(channel)
@@ -255,7 +254,7 @@ export default createStore({
                 }
                 return response;
             } catch (e) {
-                alert(e + params.nameMutation);
+                alert(e);
                 return 'error'
             } finally {
                 commit('isLoading', false);

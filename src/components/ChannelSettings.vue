@@ -32,6 +32,7 @@
       </div>
       <div v-if="!isEdit && creator">
         <button
+            @click="deleteChannel"
             class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить канал
         </button>
@@ -154,6 +155,19 @@ export default {
       changeChoosenSettingsChannel: 'changeChoosenSettingsChannel',
       changeChoosenUserForSetting: 'changeChoosenUserForSetting'
     }),
+
+    async deleteChannel() {
+      const path = (this.$route.fullPath + '/deletechannel').slice(1);
+      this.fetchData({
+        url: path,
+        method: 'get',
+        body: null,
+        token: this.token,
+        nameMutation: null
+      });
+
+      this.$router.push('/')
+    },
 
     ...mapActions({
       fetchData: 'fetchData'

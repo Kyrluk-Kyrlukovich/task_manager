@@ -20,7 +20,7 @@
              class="p-2 hover:bg-slate-300 rounded transition-[background-color] duration-[0.25s] ease-out">
           {{ chooseDateTask.day }} {{ this.shortedNameMonths[chooseDateTask.month] }} {{ chooseDateTask.year }}
         </div>
-        <transition name="modalSmallCalendar">
+        <transition name="modalSmallCalendar" class="hover:cursor-pointer">
           <div v-if="isCalendar" class="absolute left-[100px] top-[150px] h-[210px] bg-slate-200 w-[300px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallCalendar @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"/>
           </div>
@@ -31,7 +31,7 @@
         >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minutes }}
         </div>
         <transition name="modalSmallChooseTime">
-          <div v-if="isTime" class="h-[250px] bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isTime" class="h-[250px]  bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <small-choose-time @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
           </div>
         </transition>
@@ -52,7 +52,7 @@
           </div>
         </div>
         <transition name="smallStatus">
-          <div v-if="isStatus" class="absolute top-[200px] left-[190px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isStatus" class="absolute hover:cursor-pointer top-[200px] left-[190px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallStatus @chooseStatus="chooseStatus"/>
           </div>
         </transition>
@@ -188,10 +188,15 @@ export default {
     },
 
     openTime() {
-      this.isCalendar = false;
-      this.isColor = false;
-      this.isStatus = false;
-      this.isTime = true;
+      if(this.isTime) {
+        this.closeSmallTime()
+      } else {
+        this.isCalendar = false;
+        this.isColor = false;
+        this.isStatus = false;
+        this.isTime = true;
+      }
+
     },
 
     chooseTime(time) {
@@ -214,10 +219,15 @@ export default {
     },
 
     openCalendar() {
-      this.isTime = false;
-      this.isColor = false;
-      this.isCalendar = true;
-      this.isStatus = false;
+      if(this.isCalendar) {
+        this.closeSmallCalendar()
+      } else {
+        this.isTime = false;
+        this.isColor = false;
+        this.isCalendar = true;
+        this.isStatus = false;
+      }
+
     },
 
     closeSmallCalendar() {
@@ -278,14 +288,14 @@ export default {
 .modalSmallChooseTime-enter-active,
 .smallStatus-enter-active,
 .smallColorTask-enter-active {
-  animation: open 0.6s ease-in-out;
+  animation: open 0.45s ease-in-out;
 }
 
 .modalSmallCalendar-leave-active,
 .modalSmallChooseTime-leave-active,
 .smallStatus-leave-active,
 .smallColorTask-leave-active {
-  animation: open 0.6s reverse ease-in-out;
+  animation: open 0.45s reverse ease-in-out;
 }
 
   @keyframes open {
