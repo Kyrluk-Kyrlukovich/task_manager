@@ -32,6 +32,17 @@ export default createStore({
         },
         creatorChannel: false,
 
+        modalAcceptedAction: {
+            isOpen: false,
+            currAction: null
+        } ,
+        actions: {
+            isDeleteTask: {
+                isAccept: false,
+                text: 'Вы уверены что хотите удалить задачу?',
+                nameMutation: 'acceptOrNotDeleteTask'
+            },
+        },
         isLoadingTasks: true,
         isProfileModal: false,
     },
@@ -92,6 +103,19 @@ export default createStore({
             } else {
                 state.month -= 1;
             }
+        },
+
+        acceptOrNotDeleteTask(state, bool) {
+            state.actions.isDeleteTask.isAccept = bool
+        },
+
+        openAcceptModal(state, obj) {
+            state.modalAcceptedAction.isOpen = obj.bool
+            state.modalAcceptedAction.currAction = obj.nameAction
+        },
+        
+        closeAcceptmodal(state) {
+            state.modalAcceptedAction.isOpen = false
         },
 
         openProfileModal(state) {

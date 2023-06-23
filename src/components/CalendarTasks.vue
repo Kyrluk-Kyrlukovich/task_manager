@@ -26,11 +26,12 @@
               class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
               ref="day"
           >
-            <div v-for="task in item.tasks" :key="task.id"
+            <div v-for="task in item.tasks.slice(0, 3)" :key="task.id"
                  class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
               <div class="absolute p-1">{{ task['head_task'] }}</div>
               <div class="h-full rounded-r-[7px] opacity-25" :class="task.color['name_color']"></div>
             </div>
+            <div v-if="item.tasks.length > 3" class="h-[10px] text-[16px]">...</div>
             <div class="h-[20%] w-full text-right mt-auto">{{ item.day }}</div>
           </div>
         </div>
@@ -112,6 +113,10 @@ export default {
         this.formatTaskHead(calendar, this.$refs.day[0]);
       }
       return calendar;
+    },
+
+    sliceTasksArrray(tasks) {
+      return tasks.slice(3)
     },
 
     ...mapGetters({

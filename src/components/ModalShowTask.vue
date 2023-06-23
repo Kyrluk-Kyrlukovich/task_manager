@@ -52,7 +52,7 @@
                 class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Закрыть
         </button>
-        <button @click="deleteTask"
+        <button @click="openAcceptModal({bool:true, nameAction:'isDeleteTask'})"
                 v-if="!isEditTask"
                 class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import SmallColorTask from "@/components/SmallColorTask";
 import SmallChooseTime from "@/components/SmallChooseTime";
 import SmallStatus from "@/components/SmallStatus";
@@ -98,6 +98,10 @@ export default {
     store.subscribe((mutation) => {
       if (mutation.type == 'changeChoosenTask') {
         this.task = {...this.choosenTask}
+      } else if(mutation.type == 'acceptOrNotDeleteTask') {
+        if(this.actions.isDeleteTask.isAccept) {
+          this.deleteTask();
+        }
       }
     })
 
@@ -113,7 +117,8 @@ export default {
     ...mapState({
       choosenTask: state => state.choosenTask,
       token: state => state.token,
-      isAuth: state => state.isAuth
+      isAuth: state => state.isAuth,
+      actions: state => state.actions
     }),
 
     ...mapGetters({
@@ -138,7 +143,12 @@ export default {
 
   methods: {
     ...mapActions({
-      fetchData:'fetchData'
+      fetchData:'fetchData',
+
+    }),
+
+    ...mapMutations({
+      openAcceptModal: 'openAcceptModal'
     }),
 
     async deleteTask() {
