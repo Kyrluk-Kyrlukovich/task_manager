@@ -19,20 +19,20 @@
       <div v-if="isEdit">
         <button
             @click="cancellChanges"
-            class="w-[100%] h-full rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
+            class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Отменить
         </button>
       </div>
       <div v-if="isEdit">
         <button
-            @click="saveChanges"
+            @click="openAcceptModal({bool:true, nameAction:'isEditChannel'})"
             class="w-[100%] h-full rounded-[5px] bg-emerald-400 hover:cursor-pointer hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
         </button>
       </div>
       <div v-if="!isEdit && creator">
         <button
-            @click="deleteChannel"
+            @click="openAcceptModal({bool:true, nameAction:'isDeleteChannel'})"
             class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить канал
         </button>
@@ -83,6 +83,13 @@
             class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
       </div>
   </transition>
+  <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAcceptModal">
+    <transition name="modalAccept">
+      <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200  h-[150px] w-[275px]">
+        <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">{{actions[modalAcceptedAction.currAction].text}}</ModalAcceptedAction>
+      </div>
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -90,6 +97,7 @@
 import {mapActions, mapMutations, mapState} from "vuex";
 import ModalAddUserOnChannel from "@/components/ModalAddUserOnChannel";
 import SmallFunctions from "@/components/SmallFunctions";
+import store from '@/store';
 
 export default {
   name: "ChannelSettings",
@@ -138,6 +146,18 @@ export default {
 
   created() {
     this.channelName = this.choosenSettingsChannel;
+
+    store.subscribe((mutation) => {
+    if(mutation.type == 'acceptOrNotDeleteChannel') {
+        if(this.actions.isDeleteChannel.isAccept) {
+          this.deleteChannel();
+        }
+      } else if(mutation.type == 'acceptOrNotEditChannel') {
+        if(this.actions.isEditChannel.isAccept) {
+          this.saveChanges();
+        }
+      }
+    })
   },
 
   computed: {
@@ -146,14 +166,18 @@ export default {
       isAuth: state => state.isAuth,
       token: state => state.token,
       usersChannel: state => state.usersChannel,
-      creator: state => state.creatorChannel
+      creator: state => state.creatorChannel,
+      modalAcceptedAction: state => state.modalAcceptedAction,
+      actions: state => state.actions
     }),
   },
 
   methods: {
     ...mapMutations({
       changeChoosenSettingsChannel: 'changeChoosenSettingsChannel',
-      changeChoosenUserForSetting: 'changeChoosenUserForSetting'
+      changeChoosenUserForSetting: 'changeChoosenUserForSetting',
+      openOrCloseAcceptModal: 'openOrCloseAcceptModal',
+      openAcceptModal: 'openAcceptModal'
     }),
 
     async deleteChannel() {
@@ -251,6 +275,7 @@ export default {
     saveChanges() {
       this.changeChoosenSettingsChannel(this.channelName)
       let path = this.$route.fullPath.substring(1)
+      console.log(this.channelName);
       this.fetchData({url: path, method: 'post', body: {'name_channel': this.channelName}, token: this.token})
       this.offEdit();
     }

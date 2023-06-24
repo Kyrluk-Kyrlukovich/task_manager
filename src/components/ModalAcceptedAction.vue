@@ -27,17 +27,17 @@ export default {
 
     methods: {
         ...mapMutations({
-            closeAcceptmodal: 'closeAcceptmodal'
+            closeAcceptModal: 'closeAcceptModal'
         }),
 
         accept() {
             store.commit(this.action.nameMutation, true)
-            this.closeAcceptmodal();
+            this.closeAcceptModal();
         },
 
         cancel() {
             store.commit(this.action.nameMutation, false)
-            this.closeAcceptmodal();
+            this.closeAcceptModal();
         }
     }
 

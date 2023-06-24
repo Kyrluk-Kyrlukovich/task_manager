@@ -42,6 +42,42 @@ export default createStore({
                 text: 'Вы уверены что хотите удалить задачу?',
                 nameMutation: 'acceptOrNotDeleteTask'
             },
+
+            isEditInfoUser: {
+                isAccept: false,
+                text: 'Вы уверены что хотите сохранить изменения?',
+                nameMutation: 'acceptOrNotEditInfoUser'
+            },
+
+            isEditTask: {
+                isAccept: false,
+                text: 'Вы уверены что хотите сохранить изменения?',
+                nameMutation: 'acceptOrNotEditTask'
+            },
+
+            isDeleteChannel: {
+                isAccept: false,
+                text: 'Вы уверены что хотите удалить канал?',
+                nameMutation: 'acceptOrNotDeleteChannel'
+            },
+
+            isEditChannel: {
+                isAccept: false,
+                text: 'Вы уверены что хотите сохранить изменения?',
+                nameMutation: 'acceptOrNotEditChannel'
+            },
+
+            isDeleteUserFromChannel: {
+                isAccept: false,
+                text: 'Вы уверены что хотите удалить пользователя из канала?',
+                nameMutation: 'acceptOrNotDeleteUserFromChannel'
+            },
+
+            isEditUserFunction: {
+                isAccept: false,
+                text: 'Вы уверены что хотите сохранить изменения?',
+                nameMutation: 'acceptOrNotEditUserFunction'
+            },
         },
         isLoadingTasks: true,
         isProfileModal: false,
@@ -109,12 +145,38 @@ export default createStore({
             state.actions.isDeleteTask.isAccept = bool
         },
 
+        acceptOrNotEditInfoUser(state, bool) {
+            state.actions.isEditInfoUser.isAccept = bool
+        },
+
+        acceptOrNotEditTask(state, bool) {
+            state.actions.isEditTask.isAccept = bool
+        },
+
+        acceptOrNotDeleteChannel(state, bool) {
+            state.actions.isDeleteChannel.isAccept = bool
+        },
+
+        acceptOrNotEditChannel(state, bool) {
+            state.actions.isEditChannel.isAccept = bool
+        }, 
+
+        acceptOrNotDeleteUserFromChannel(state, bool) {
+            state.actions.isDeleteUserFromChannel.isAccept = bool
+        },
+
+        acceptOrNotEditUserFunction(state, bool) {
+            state.actions.isEditUserFunction.isAccept = bool
+        },
+        
+
         openAcceptModal(state, obj) {
+            console.log('work');
             state.modalAcceptedAction.isOpen = obj.bool
             state.modalAcceptedAction.currAction = obj.nameAction
         },
         
-        closeAcceptmodal(state) {
+        closeAcceptModal(state) {
             state.modalAcceptedAction.isOpen = false
         },
 
@@ -212,7 +274,6 @@ export default createStore({
         },
 
         loadUsersChannel(state, data) {
-            console.log(data.data);
             state.usersChannel = [];
             data.users.forEach(el => {
                 state.usersChannel.push(el)
@@ -278,7 +339,7 @@ export default createStore({
                 }
                 return response;
             } catch (e) {
-                alert(e);
+                alert(e + params.nameMutation);
                 return 'error'
             } finally {
                 commit('isLoading', false);

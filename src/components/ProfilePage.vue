@@ -27,7 +27,7 @@
         </div>
         <button
             v-if="!isEdit"
-            @click="onEdit"
+            @click.prevent="onEdit"
             class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Редактировать
         </button>
@@ -38,23 +38,30 @@
           </button>
         <button
             v-if="isEdit"
-            @click="cancel"
+            @click.prevent="cancel"
             class="w-[100%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Отменить
         </button>
         <button
             v-if="isEdit"
-            @click="save"
+            @click.prevent="openAcceptModal({bool:true, nameAction:'isEditInfoUser'})"
             class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
         </button>
       </form>
+      <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAccept">
+        <transition name="modalAccept">
+          <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200  h-[150px] w-[275px]">
+            <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">{{actions[modalAcceptedAction.currAction].text}}</ModalAcceptedAction>
+          </div>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex";
+import {mapActions, mapMutations, mapState} from "vuex";
 import store from "@/store";
 
 export default {
@@ -76,7 +83,9 @@ export default {
     ...mapState({
       token: state => state.token,
       user: state => state.user,
-      isAuth: state => state.isAuth
+      isAuth: state => state.isAuth,
+      modalAcceptedAction: state => state.modalAcceptedAction,
+      actions: state => state.actions
     })
   },
 
@@ -104,6 +113,12 @@ export default {
     store.subscribe((mutation) => {
       if (mutation.type == 'loadInfoUser') {
         this.getValues(this.user)
+      } else if(mutation.type == 'acceptOrNotEditInfoUser') {
+        if(this.actions.isEditInfoUser.isAccept) {
+          this.save();
+        } else {
+          this.cancel();
+        }
       }
 
     })
@@ -114,12 +129,22 @@ export default {
       fetchData: 'fetchData'
     }),
 
+    ...mapMutations({
+      openOrCloseAcceptModal: 'openOrCloseAcceptModal',
+      openAcceptModal: 'openAcceptModal',
+      closeAcceptModal: 'closeAcceptModal'
+    }),
+
     onEdit() {
       this.isEdit = true
     },
 
     offEdit() {
       this.isEdit = false
+    },
+
+    closeAccept() {
+      this.closeAcceptModal()
     },
 
     save() {

@@ -10,11 +10,11 @@
             <span class="slider round"></span>
           </label>
         </div>
-        <button @click="deleteUserFromChannel"
+        <button @click="openAcceptModal({bool:true, nameAction:'isDeleteUserFromChannel'})"
                 class="w-[100%] h-fit rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Удалить из канала
         </button>
-        <button @click="save"
+        <button @click="openAcceptModal({bool:true, nameAction:'isEditUserFunction'})"
                 class="w-[100%] h-fit rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
         </button>
@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex";
+import store from '@/store';
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "SmallFunctions",
@@ -37,7 +38,9 @@ export default {
     ...mapState({
       token: state => state.token,
       usersFunctions: state => state.usersFunctions,
-      choosenUserForSettings: state => state.choosenUserForSettings
+      choosenUserForSettings: state => state.choosenUserForSettings,
+      modalAcceptedAction: state => state.modalAcceptedAction,
+      actions: state => state.actions
     }),
 
     checkFunctions() {
@@ -61,6 +64,19 @@ export default {
       token: this.token,
       nameMutation: 'loadUsersFunctions'
     })
+
+    store.subscribe((mutation) => {
+    if(mutation.type == 'acceptOrNotDeleteUserFromChannel') {
+        if(this.actions.isDeleteUserFromChannel.isAccept) {
+          this.deleteUserFromChannel();
+        }
+      } else if(mutation.type == 'acceptOrNotEditUserFunction') {
+        if(this.actions.isEditUserFunction.isAccept) {
+          this.save();
+          this.closeSmallFunctions();
+        }
+      }
+    })
   },
 
   methods: {
@@ -68,10 +84,14 @@ export default {
       fetchData: 'fetchData'
     }),
 
-    deleteUserFromChannel() {
+    ...mapMutations({
+      openAcceptModal: 'openAcceptModal'
+    }),
+
+    async deleteUserFromChannel() {
       const deleteUserFromChannelPath = (this.$route.fullPath + '/deleteuser').slice(1)
       const usersChannelPath = this.$route.fullPath.slice(1)
-      this.fetchData({
+      await this.fetchData({
         url: deleteUserFromChannelPath,
         method: 'post',
         body: {id_user: this.choosenUserForSettings.id},
@@ -79,12 +99,12 @@ export default {
         nameMutation: null
       })
 
-      this.fetchData({
+      await this.fetchData({
         url: usersChannelPath,
         method: 'get',
         body: null,
         token: this.token,
-        nameMutation: 'loadUsers'
+        nameMutation: 'loadUsersChannel'
       })
 
       this.closeSmallFunctions();
@@ -102,7 +122,6 @@ export default {
           functionsForFetch.push(functions[i].value)
         }
       }
-      console.log(functionsForFetch)
       this.fetchData({
         url: `channel/${this.$route.params.id}/settings/userfunctions`,
         method: 'post',

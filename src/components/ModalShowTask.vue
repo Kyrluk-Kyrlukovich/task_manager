@@ -62,7 +62,7 @@
                 class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Отменить
         </button>
-        <button @click="updateTask"
+        <button @click="openAcceptModal({bool:true, nameAction:'isEditTask'})"
                 v-if="isEditTask"
                 class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Сохранить
@@ -101,6 +101,10 @@ export default {
       } else if(mutation.type == 'acceptOrNotDeleteTask') {
         if(this.actions.isDeleteTask.isAccept) {
           this.deleteTask();
+        }
+      } else if(mutation.type == 'acceptOrNotEditTask') {
+        if(this.actions.isEditTask.isAccept) {
+          this.updateTask();
         }
       }
     })
