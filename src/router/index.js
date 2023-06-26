@@ -14,6 +14,12 @@ const routes = [
     },
 
     {
+        name:'profile',
+        path: '/profile',
+        component: ProfilePage
+    },
+
+    {
         name: 'login',
         path: '/login',
         component: LoginForm
@@ -40,11 +46,6 @@ const routes = [
         path: '/channel/:id/settings',
         component: ChannelSettings
     },
-    {
-        name:'profile',
-        path: '/profile',
-        component: ProfilePage
-    }
 
 ]
 

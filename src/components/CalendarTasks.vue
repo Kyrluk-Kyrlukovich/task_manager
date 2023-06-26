@@ -94,8 +94,9 @@ export default {
         this.month = store.state.month;
         this.year = store.state.year;
       }
-
     })
+    // console.log(this.updateDayWithTask());
+    // this.fillNewTasks(this.updateDayWithTask())
     this.updateCalendar();
 
   },
@@ -103,13 +104,15 @@ export default {
   computed: {
     ...mapState({
       tasks: state => state.tasks,
-      isLoadingTasks: state => state.isLoadingTasks
+      isLoadingTasks: state => state.isLoadingTasks,
+      choosenDate: state => state.chooseDate,
+      dayListTask: state => state.dayListTasks
     }),
 
     CheckCurrMonth() {
       let calendar = this.updateCalendar();
       this.daysTasks();
-      if(this.$refs.day) {
+      if (this.$refs.day) {
         this.formatTaskHead(calendar, this.$refs.day[0]);
       }
       return calendar;
@@ -132,7 +135,7 @@ export default {
     }),
 
     formatTaskHead(calendar) {
-        return  calendar.map(el =>
+      return calendar.map(el =>
           el.map(day =>
               day.tasks.map(task => {
                 if (task['head_task'].length >= 16) {
@@ -151,6 +154,14 @@ export default {
       })
       this.clearTasks();
       this.fillNewTasks(this.findTasks(data.tasks))
+    },
+
+    updateDayWithTask() {
+      return this.tasks.filter(
+          task =>
+              task['date_start'].day == this.choosenDate.day
+              && +task['date_start'].month == this.choosenDate.month + 1
+              && task['date_start'].year == this.choosenDate.year)
     },
 
 

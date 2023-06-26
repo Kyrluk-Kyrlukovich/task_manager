@@ -7,7 +7,7 @@
         <h1 v-if="isTasks"
             class="text-center absolute left-[50%] top-[50%] text-[24px] translate-y-[-50%] translate-x-[-50%] font-bold opacity-[30%]">
           Нет задач</h1>
-        <div v-for="correctTime in dayListTasks" :key="correctTime['id_task']" class="w-full h-[60px] flex">
+        <div v-for="correctTime in this.findTasks(this.dayListTasks)" :key="correctTime['id_task']" class="w-full h-[60px] flex">
           <div class="w-2/12">{{ correctTime['date_start'].hour }}:{{ correctTime['date_start'].minutes }}</div>
           <div class="w-[5px] border-r-[1px] border-slate-400 relative -mr-3"></div>
           <div class="w-10/12 pl-4 pr-2 py-2 border-t-[1px] border-slate-400 text-[14px]">
@@ -21,7 +21,7 @@
     </div>
     <transition name="modalShowTask">
       <div v-if="isModalShowTask" class="absolute overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200 max-h-[420px] h-full max-w-[370px] w-full">
-        <ModalShowTask @deleteTask="deleteTask"  @closeModalShowTask="closeModalShowTask"/>
+        <ModalShowTask  @closeModalShowTask="closeModalShowTask"/>
       </div>
     </transition>
     
@@ -85,10 +85,6 @@ export default {
       fillNewTasks: 'fillNewTasks',
       changeChoosenTask: 'changeChoosenTask'
     }),
-
-    deleteTask() {
-      this.$forceUpdate();
-    },
 
     chooseTask(task) {
       this.changeChoosenTask(task)

@@ -107,21 +107,7 @@ export default {
   },
 
   created() {
-    store.subscribe((mutation) => {
-      if (mutation.type == 'changeChoosenTask') {
-        this.task = {...this.choosenTask}
-        console.log(this.task, mutation);
-      } else if(mutation.type == 'acceptOrNotDeleteTask') {
-        if(this.actions.isDeleteTask.isAccept) {
-          this.acceptOrNotDeleteTask(false);
-          this.deleteTask();
-        }
-      } else if(mutation.type == 'acceptOrNotEditTask') {
-        if(this.actions.isEditTask.isAccept) {
-          this.updateTask();
-        }
-      }
-    })
+    this.unsubscribe();
 
     if(!this.task) {
       this.task = {...this.choosenTask}
@@ -141,7 +127,8 @@ export default {
 
     ...mapGetters({
       formatDate: 'formatDate',
-      formatTime: 'formatTime'
+      formatTime: 'formatTime',
+      findTasks: 'findTasks'
     }),
 
     dateStartFormat() {
@@ -170,26 +157,42 @@ export default {
       acceptOrNotDeleteTask: 'acceptOrNotDeleteTask'
     }),
 
+    unsubscribe() {
+      store.subscribe((mutation) => {
+        if (mutation.type == 'changeChoosenTask') {
+          this.task = {...mutation.payload}
+        } else if(mutation.type == 'acceptOrNotDeleteTask') {
+          if(this.actions.isDeleteTask.isAccept) {
+            this.acceptOrNotDeleteTask(false);
+            this.deleteTask();
+            this.closeModalShowTask()
+          }
+        } else if(mutation.type == 'acceptOrNotEditTask') {
+          if(this.actions.isEditTask.isAccept) {
+            this.updateTask();
+          }
+        }
+      })
+    },
+
     async deleteTask() {
-      console.log(this.task, 'delete');
       const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
       const getNewTasksUrl = this.$route.fullPath.slice(1);
-      this.fetchData({
+      await this.fetchData({
         url:deleteTaskUrl,
         method:'post',
         body: {id_task:this.task['id_task']},
         token: this.token,
         nameMutation: null
       })
-      this.fetchData({
+      await this.fetchData({
         url:getNewTasksUrl,
         method:'get',
         body: null,
         token: this.token,
         nameMutation: 'loadTasks'
       })
-      this.closeModalShowTask()
-      this.$emit('deleteTask')
+      this.unsubscribe();
     },
 
     async updateTask() {
@@ -197,7 +200,6 @@ export default {
         let dateStart = this.formatDate(true, this.task['date_start']);
         let timeStart = this.formatTime(this.task['date_start'])
         let date = dateStart + ' ' + timeStart;
-        console.log(date)
         let path = this.$route.path.slice(1)
 
         await this.fetchData({

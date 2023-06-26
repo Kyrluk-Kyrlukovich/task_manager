@@ -63,6 +63,7 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     let path = to.path.slice(1, to.path.length);
+    console.log(to, from)
     if(to.name == 'channel' && (to.params.id != from.params.id)) {
       if(this.isAuth) {
         this.fetchData({

@@ -104,7 +104,7 @@ export default createStore({
         },
 
         findTasks: (state) => data => {
-            let findedTasks = []
+            const findedTasks = []
             state.tasks.forEach(task => {
                 data.forEach(calendarTask => {
                     if(task['id_task'] == calendarTask['id_task']) {

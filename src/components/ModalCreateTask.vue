@@ -212,7 +212,6 @@ export default {
     },
 
     chooseTime(time) {
-      console.log({...time})
       this.chooseTimeTask = {...time};
       this.isTime = false;
     },
