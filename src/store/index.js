@@ -78,6 +78,12 @@ export default createStore({
                 text: 'Вы уверены что хотите сохранить изменения?',
                 nameMutation: 'acceptOrNotEditUserFunction'
             },
+
+            isLogout: {
+                isAccept: false,
+                text: 'Вы уверены что хотите выйти?',
+                nameMutation: 'acceptOrNotLogout'
+            },
         },
         isLoadingTasks: true,
         isProfileModal: false,
@@ -168,10 +174,15 @@ export default createStore({
         acceptOrNotEditUserFunction(state, bool) {
             state.actions.isEditUserFunction.isAccept = bool
         },
+
+        acceptOrNotLogout(state, bool) {
+            console.log('mutation')
+            state.actions.isLogout.isAccept = bool
+        },
+
         
 
         openAcceptModal(state, obj) {
-            console.log('work');
             state.modalAcceptedAction.isOpen = obj.bool
             state.modalAcceptedAction.currAction = obj.nameAction
         },

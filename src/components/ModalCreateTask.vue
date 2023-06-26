@@ -32,7 +32,7 @@
         </div>
         <transition name="modalSmallChooseTime">
           <div v-if="isTime" class="h-[250px]  bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
-            <small-choose-time @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
+            <SmallChooseTime @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
           </div>
         </transition>
       </div>
@@ -74,7 +74,7 @@
         </div>
         <transition name="smallColorTask">
           <div v-if="isColor" class="absolute top-[260px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]" >
-            <small-color-task @chooseColor="chooseColor" />
+            <SmallColorTask @chooseColor="chooseColor" />
           </div>
         </transition>
       </div>
