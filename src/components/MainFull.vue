@@ -29,6 +29,21 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     let path = to.path.slice(1, to.path.length);
+
+    if(to.name == 'main') {
+      next((vm) => {
+        if(vm.isAuth) {
+          vm.fetchData({
+            url: 'profile',
+            method: 'get',
+            body: null,
+            token: vm.token,
+            nameMutation: 'loadInfoUser'
+          })
+        }
+      });
+    }
+
     if(to.name == 'channel' && (to.params.id != from.params.id)) {
       next((vm) => {
         if(vm.isAuth) {

@@ -176,7 +176,6 @@ export default createStore({
         },
 
         acceptOrNotLogout(state, bool) {
-            console.log('mutation')
             state.actions.isLogout.isAccept = bool
         },
 
@@ -200,7 +199,7 @@ export default createStore({
         },
 
         changeChoosenDate(state, data) {
-            state.chooseDate = data
+            state.chooseDate = {...data}
         },
 
         changeChoosenSettingsChannel(state, data) {

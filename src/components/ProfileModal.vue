@@ -26,7 +26,6 @@ export default {
   created() {
     store.subscribe((mutation) => {
       if (mutation.type == 'acceptOrNotLogout') {
-        console.log(this.token, mutation, this.actions.isLogout.isAccept)
         if(this.actions.isLogout.isAccept) {
           this.acceptOrNotLogout(false)
           this.logout();

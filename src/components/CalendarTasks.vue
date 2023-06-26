@@ -127,14 +127,14 @@ export default {
   methods: {
     ...mapMutations({
       fillNewTasks: 'fillNewTasks',
-      clearTasks: 'clearTasks'
+      clearTasks: 'clearTasks',
+      changeChoosenDate: 'changeChoosenDate'
     }),
 
     formatTaskHead(calendar) {
         return  calendar.map(el =>
           el.map(day =>
               day.tasks.map(task => {
-                console.log(task['head_task'].length);
                 if (task['head_task'].length >= 16) {
                   task['head_task'] = task['head_task'].substring(1, 16) + '...'
                 }
@@ -144,6 +144,11 @@ export default {
     },
 
     showDayWithTask(data) {
+      this.changeChoosenDate({
+        month: data.month,
+        day: data.day,
+        year: data.year
+      })
       this.clearTasks();
       this.fillNewTasks(this.findTasks(data.tasks))
     },

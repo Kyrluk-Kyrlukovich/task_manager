@@ -21,7 +21,7 @@
     </div>
     <transition name="modalShowTask">
       <div v-if="isModalShowTask" class="absolute overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200 max-h-[420px] h-full max-w-[370px] w-full">
-        <modal-show-task  @closeModalShowTask="closeModalShowTask"/>
+        <ModalShowTask @deleteTask="deleteTask"  @closeModalShowTask="closeModalShowTask"/>
       </div>
     </transition>
     
@@ -85,6 +85,10 @@ export default {
       fillNewTasks: 'fillNewTasks',
       changeChoosenTask: 'changeChoosenTask'
     }),
+
+    deleteTask() {
+      this.$forceUpdate();
+    },
 
     chooseTask(task) {
       this.changeChoosenTask(task)

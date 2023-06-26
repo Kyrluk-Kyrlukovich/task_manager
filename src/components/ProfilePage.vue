@@ -91,7 +91,6 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     let path = to.path.slice(1);
-    console.log(to.name)
     if(to.name == 'profile') {
       next((vm) => {
         if(vm.isAuth) {
@@ -120,8 +119,17 @@ export default {
           this.cancel();
         }
       }
-
     })
+
+    if(this.isAuth) {
+      this.fetchData({
+        url: this.$route.fullPath.slice(1),
+        method: 'get',
+        body: null,
+        token: this.token,
+        nameMutation: 'loadInfoUser'
+      })
+    }
   },
 
   methods: {

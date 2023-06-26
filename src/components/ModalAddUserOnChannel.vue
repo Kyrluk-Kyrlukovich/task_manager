@@ -47,7 +47,8 @@ export default {
   computed: {
     ...mapState({
       token: state => state.token,
-      users: state => state.users
+      users: state => state.users,
+      isAuth: state => state.isAuth
     }),
 
     searchUsers() {
@@ -65,7 +66,7 @@ export default {
     },
 
     addUser(idUser) {
-      let path = this.$route.fullPath.slice(1) + '/adduser'
+      const path = this.$route.fullPath.slice(1) + '/adduser'
       this.fetchData({
         url:path,
         method: 'post',
@@ -74,6 +75,16 @@ export default {
         },
         token: this.token
       })
+
+      if (this.isAuth) {
+        this.fetchData({
+          url: this.$route.fullPath.slice(1),
+          method: 'get',
+          body: null,
+          token: this.token,
+          nameMutation: 'loadUsersChannel'
+        })
+      }
     }
   }
 }

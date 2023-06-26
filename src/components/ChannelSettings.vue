@@ -85,7 +85,7 @@
   </transition>
   <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAcceptModal">
     <transition name="modalAccept">
-      <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200  h-[150px] w-[275px]">
+      <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 h-[150px] w-[300px] opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200">
         <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">{{actions[modalAcceptedAction.currAction].text}}</ModalAcceptedAction>
       </div>
     </transition>
@@ -119,7 +119,7 @@ export default {
   },
 
   beforeRouteEnter(to, from, next) {
-    let path = to.path.slice(1, to.path.length);
+    const path = to.path.slice(1, to.path.length);
     if (to.name == 'channelSettings') {
       next((vm) => {
         if (vm.isAuth) {

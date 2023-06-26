@@ -12,7 +12,11 @@
         <div @click="openOrCloseModalTime" class="rounded-[5px] p-1 h-[30px] bg-slate-200" :class="editClass">
           {{ dateStartFormat }}
         </div>
-        <small-choose-time v-if="isTimeModal" @closeSmallTime="closeModalTime" @chooseTime="chooseTime"/>
+        <transition name="modalSmallChooseTime">
+          <div v-if="isTimeModal" class="h-[250px]  bg-slate-200 absolute top-[110px] left-[150px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <SmallChooseTime @closeSmallTime="closeModalTime" @chooseTime="chooseTime"/>
+          </div>
+        </transition>
       </div>
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
         <h3>Статус:</h3>
@@ -20,7 +24,11 @@
             task.status['name_status']
           }}
         </div>
-        <small-status v-if="isStatusModal" @chooseStatus="chooseStatus" class="absolute"/>
+        <transition name="smallStatus">
+          <div v-if="isStatusModal" class="absolute hover:cursor-pointer top-[160px] left-[140px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <SmallStatus @chooseStatus="chooseStatus" class="absolute"/>
+          </div>
+        </transition>
       </div>
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
         <h3>Цвет:</h3>
@@ -33,7 +41,11 @@
                   stroke="#535353" stroke-width="3"/>
             </svg>
           </div>
-          <small-color-task v-if="isColorModal" @chooseColor="chooseColor" class="absolute left-[150px] top-[250px]"/>
+          <transition name="smallColorTask">
+            <div v-if="isColorModal" class="absolute top-[200px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]" >
+              <SmallColorTask @chooseColor="chooseColor"/>
+            </div>
+          </transition>
         </div>
       </div>
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
@@ -98,8 +110,10 @@ export default {
     store.subscribe((mutation) => {
       if (mutation.type == 'changeChoosenTask') {
         this.task = {...this.choosenTask}
+        console.log(this.task, mutation);
       } else if(mutation.type == 'acceptOrNotDeleteTask') {
         if(this.actions.isDeleteTask.isAccept) {
+          this.acceptOrNotDeleteTask(false);
           this.deleteTask();
         }
       } else if(mutation.type == 'acceptOrNotEditTask') {
@@ -152,10 +166,12 @@ export default {
     }),
 
     ...mapMutations({
-      openAcceptModal: 'openAcceptModal'
+      openAcceptModal: 'openAcceptModal',
+      acceptOrNotDeleteTask: 'acceptOrNotDeleteTask'
     }),
 
     async deleteTask() {
+      console.log(this.task, 'delete');
       const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
       const getNewTasksUrl = this.$route.fullPath.slice(1);
       this.fetchData({
@@ -173,6 +189,7 @@ export default {
         nameMutation: 'loadTasks'
       })
       this.closeModalShowTask()
+      this.$emit('deleteTask')
     },
 
     async updateTask() {
@@ -314,4 +331,27 @@ export default {
 .purple {
   background-color: #800080;
 }
+
+.modalSmallCalendar-enter-active,
+.modalSmallChooseTime-enter-active,
+.smallStatus-enter-active,
+.smallColorTask-enter-active {
+  animation: open 0.45s ease-in-out;
+}
+
+.modalSmallCalendar-leave-active,
+.modalSmallChooseTime-leave-active,
+.smallStatus-leave-active,
+.smallColorTask-leave-active {
+  animation: open 0.45s reverse ease-in-out;
+}
+
+  @keyframes open {
+    0% {
+      max-height: 0;
+    }
+    100% {
+      max-height: 250px;
+    }
+  }
 </style>

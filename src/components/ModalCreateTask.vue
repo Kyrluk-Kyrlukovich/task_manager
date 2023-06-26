@@ -148,6 +148,7 @@ export default {
   computed: {
     ...mapState({
       date: state => state.date,
+      isAuth: state => state.isAuth,
       colorsTasks: state => state.colorsTasks,
       defaultColor: state => state.defaultColor,
       statusesTasks: state => state.statusesTasks,
@@ -184,6 +185,17 @@ export default {
         token: this.token,
         nameMutation: null,
       })
+
+      if(this.isAuth) {
+          this.fetchData({
+            url: this.$route.fullPath.slice(1),
+            method: 'get',
+            body: null,
+            token: this.token,
+            nameMutation: 'loadTasks'
+          })
+        }
+
       this.closeModalWindow();
     },
 
