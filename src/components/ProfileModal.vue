@@ -24,20 +24,25 @@ export default {
   },
 
   created() {
-    store.subscribe((mutation) => {
-      if (mutation.type == 'acceptOrNotLogout') {
-        if(this.actions.isLogout.isAccept) {
-          this.acceptOrNotLogout(false)
-          this.logout();
-        }
-      }
-    })
+    this.unsubscribe()
   },
 
   methods:{
     ...mapActions({
       fetchData: 'fetchData'
     }),
+
+    unsubscribe() {
+      return store.subscribe((mutation) => {
+        if (mutation.type == 'acceptOrNotLogout') {
+          if(this.actions.isLogout.isAccept) {
+            this.acceptOrNotLogout(false)
+            this.logout();
+            this.unsubscribe()
+          }
+        }
+      })
+    },
 
     ...mapMutations({
       acceptOrNotLogout: 'acceptOrNotLogout'

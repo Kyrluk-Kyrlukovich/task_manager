@@ -206,6 +206,7 @@ export default {
         token: this.token,
         nameMutation: null
       })
+      this.$router.push('/');
     },
 
 

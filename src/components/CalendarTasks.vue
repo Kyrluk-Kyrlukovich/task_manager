@@ -93,12 +93,12 @@ export default {
       } else if (mutation.type == 'previousMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
+      } else if(mutation.type == 'loadTasks') {
+         this.clearTasks();
+        this.fillNewTasks(this.updateDayWithTask(mutation.payload));
       }
     })
-    // console.log(this.updateDayWithTask());
-    // this.fillNewTasks(this.updateDayWithTask())
     this.updateCalendar();
-
   },
 
   computed: {
@@ -156,12 +156,13 @@ export default {
       this.fillNewTasks(this.findTasks(data.tasks))
     },
 
-    updateDayWithTask() {
-      return this.tasks.filter(
+    updateDayWithTask(arr) {
+      const newArr = arr.filter(
           task =>
               task['date_start'].day == this.choosenDate.day
               && +task['date_start'].month == this.choosenDate.month + 1
               && task['date_start'].year == this.choosenDate.year)
+      return newArr;
     },
 
 

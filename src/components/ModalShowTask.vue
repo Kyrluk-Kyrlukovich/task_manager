@@ -165,7 +165,6 @@ export default {
           if(this.actions.isDeleteTask.isAccept) {
             this.acceptOrNotDeleteTask(false);
             this.deleteTask();
-            this.closeModalShowTask()
           }
         } else if(mutation.type == 'acceptOrNotEditTask') {
           if(this.actions.isEditTask.isAccept) {
@@ -192,6 +191,7 @@ export default {
         token: this.token,
         nameMutation: 'loadTasks'
       })
+      this.closeModalShowTask()
       this.unsubscribe();
     },
 
