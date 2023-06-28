@@ -155,10 +155,10 @@ export default {
       this.closeAcceptModal()
     },
 
-    save() {
+    async save() {
       let url = this.$route.fullPath.slice(1)
 
-      this.fetchData({
+      await this.fetchData({
         url: url + '/update-user',
         method: 'post',
         body: {
@@ -172,7 +172,7 @@ export default {
         nameMutation: null
       })
 
-      this.fetchData({
+      await this.fetchData({
         url: url,
         method: 'get',
         body: null,

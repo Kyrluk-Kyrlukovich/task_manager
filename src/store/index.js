@@ -85,6 +85,12 @@ export default createStore({
                 nameMutation: 'acceptOrNotLogout'
             },
         },
+
+        errorAction: {
+            isError: false,
+            text:null,
+        },
+
         isLoadingTasks: true,
         isProfileModal: false,
     },
@@ -145,6 +151,14 @@ export default createStore({
             } else {
                 state.month -= 1;
             }
+        },
+
+        changeStatusIsError(state, bool){
+            state.errorAction.isError = bool
+        },
+
+        changeTextError(state, text) {
+            state.errorAction.text = text;
         },
 
         acceptOrNotDeleteTask(state, bool) {
@@ -328,28 +342,37 @@ export default createStore({
                         url: urlFetch,
                         data: JSON.stringify(params.body),
                         headers: headers});
-                    //  fetch(urlFetch, {
-                    //     method: params.method,
-                    //     headers: headers,
-                    // });
                 } else {
                     response = await axios({
                         method: params.method,
                         url: urlFetch,
                         data: JSON.stringify(params.body),
                         headers: headers}); 
-                    // fetch(urlFetch, {
-                    //     method: params.method,
-                    //     headers: headers,
-                    //     body: JSON.stringify(params.body)
-                    // });
                 }
                 if (params.nameMutation) {
                     commit(params.nameMutation, response.data.data);
                 }
                 return response;
             } catch (e) {
-                alert(e + params.nameMutation);
+                commit('changeStatusIsError', true)
+                console.log(e.response);
+                const error = JSON.parse(e.response.request.responseText).error
+                console.log(error);
+                if(error.message == 'Validation failed') {
+                    const messgesResponse = error.errors
+                    let fullMessageResponse = '';
+                    for(let key in messgesResponse) {
+                        fullMessageResponse += messgesResponse[key][0]
+                        fullMessageResponse += ' '
+                    }
+                    console.log(error.errors);
+                    commit('changeTextError', fullMessageResponse)
+                } else {
+                    commit('changeTextError', error.message)
+                }
+                
+                setTimeout(() => commit('changeStatusIsError', false), 3000)
+                //alert(e + params.nameMutation);
                 return 'error'
             } finally {
                 commit('isLoading', false);

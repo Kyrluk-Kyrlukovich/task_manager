@@ -8,6 +8,12 @@
           </div>
         </transition>
       </div>
+      <transition name="modalError">
+        <div v-show="errorAction.isError" class="absolute  p-8 z-20 opacity-100 overflow-hidden right-[2%] bottom-[2%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200  h-[125px] w-[325px]">
+          <ModalError>{{errorAction.text}}</ModalError>
+        </div>
+      </transition>
+
   </div>
 </template>
 
@@ -26,6 +32,25 @@
   animation: open 0.7s reverse;
 }
 
+.modalError-enter-active {
+  animation: open-modal-error 0.7s;
+}
+
+.modalError-leave-active {
+  animation: open-modal-error 0.7s reverse;
+}
+
+  @keyframes open-modal-error {
+    0% {
+      opacity: 0;
+      bottom: 0;
+    }
+    100% {
+      opacity: 1;
+      bottom: 2%;
+    }
+  }
+
   @keyframes open {
     0% {
       max-height: 0;
@@ -38,12 +63,13 @@
 
 <script>
 import ModalAcceptedAction from "@/components/ModalAcceptedAction"
+import ModalError from "@/components/ModalError"
 
 import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "App",
-  components: {ModalAcceptedAction },
+  components: {ModalAcceptedAction, ModalError},
 
 
   data() {
@@ -89,7 +115,8 @@ export default {
       isAuth: state => state.isAuth,
       token: state => state.token,
       modalAcceptedAction: state => state.modalAcceptedAction,
-      actions: state => state.actions
+      actions: state => state.actions,
+      errorAction: state => state.errorAction
     })
   },
 };
