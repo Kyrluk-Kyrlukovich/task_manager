@@ -71,9 +71,9 @@ export default {
 
     async trySignup() {
       let data = await this.fetchData({
-        url:'signup',
-        method:'post',
-        body:{
+        url: 'signup',
+        method: 'post',
+        body: {
           first_name: this.firstName,
           last_name: this.lastName,
           email: this.email,
@@ -84,7 +84,7 @@ export default {
         nameMutation: null
       })
 
-      if(data.data) {
+      if (data.data) {
         this.$router.push('/')
       }
     }

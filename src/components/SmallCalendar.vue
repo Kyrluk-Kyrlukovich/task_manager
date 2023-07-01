@@ -5,7 +5,8 @@
       <button @click="closeSmallCalendar">
         <svg width="12" height="12" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="2.19873" width="24.8757" height="3.10946" rx="1" transform="rotate(45 2.19873 0)" fill="#64748B"/>
-          <rect x="0.211517" y="17.8013" width="24.8757" height="3.10946" rx="1" transform="rotate(-45 0.211517 17.8013)" fill="#64748B"/>
+          <rect x="0.211517" y="17.8013" width="24.8757" height="3.10946" rx="1"
+                transform="rotate(-45 0.211517 17.8013)" fill="#64748B"/>
         </svg>
       </button>
     </div>
@@ -45,7 +46,7 @@
         <div
             v-for="item in items"
             :key="item"
-            @click="chooseDate"
+            @click="chooseDate($event, item)"
             :class=classObject(item)
             class="flex flex-col justify-start"
         >
@@ -144,17 +145,17 @@ export default {
   },
 
   methods: {
-    chooseDate(evt) {
+    chooseDate(evt, chooseDay) {
       let data = JSON.parse(JSON.stringify(this.date));
       let choosenDate;
-      for(let i = 0; i < data.length; i++) {
-         for(let j = 0; j < 7; j++) {
-           let tempDay = data[i][j];
-           if(tempDay.numDay == evt.target.textContent) {
-             choosenDate = {day: tempDay.numDay, month: tempDay.month, year: tempDay.year}
-             this.choosenDate = choosenDate;
-           }
-         }
+      for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < 7; j++) {
+          let tempDay = data[i][j];
+          if (tempDay.numDay == chooseDay.numDay && tempDay.month == chooseDay.month ) {
+            choosenDate = {day: tempDay.numDay, month: tempDay.month, year: tempDay.year}
+            this.choosenDate = choosenDate;
+          }
+        }
       }
       this.$emit('chooseDate', this.choosenDate);
     },
@@ -199,24 +200,50 @@ export default {
           if (i == 0) {
             if (this.firstDayOfMonth <= j) {//Записывает начало текущего месяца
               dateCurrentMonth += 1;
-              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
+              arr.push({
+                numDay: dateCurrentMonth,
+                statusMonth: "month",
+                month: this.month,
+                year: this.year
+              });
             } else { //Записывает конец прошлого месяца
               let date = new Date(this.year, this.month, 0).getDate() - firstDayOfMonth;
               firstDayOfMonth -= 1;
-              arr.push({numDay: date, statusMonth: "previousMonth", month: this.month, year: this.year});
+              arr.push({
+                numDay: date,
+                statusMonth: "previousMonth",
+                month: this.month - 1,
+                year: this.year
+              });
 
             }
           } else if (i == 4) {
             if (j <= this.lastDayOfMonth) {//Записывает середину текущего месяца
+              console.log(i);
               dateCurrentMonth += 1;
-              arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
+              arr.push({
+                numDay: dateCurrentMonth,
+                statusMonth: "month",
+                month: this.month,
+                year: this.year
+              });
             } else {//Записывает начало следующего месяца
               dateStartNextMonth += 1;
-              arr.push({numDay: dateStartNextMonth, statusMonth: "nextMonth", month: this.month, year: this.year});
+              arr.push({
+                numDay: dateStartNextMonth,
+                statusMonth: "nextMonth",
+                month: this.month + 1,
+                year: this.year
+              });
             }
           } else {//Записывает конец текущего месяца
             dateCurrentMonth += 1;
-            arr.push({numDay: dateCurrentMonth, statusMonth: "month", month: this.month, year: this.year});
+            arr.push({
+              numDay: dateCurrentMonth,
+              statusMonth: "month",
+              month: this.month,
+              year: this.year
+            });
           }
 
         }

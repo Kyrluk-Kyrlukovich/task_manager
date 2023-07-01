@@ -52,10 +52,10 @@ export default {
 
 <style>
   .modal-enter-active {
-  animation: open 0.7s ease-in-out;
+  animation: open 0.5s ease-in-out;
 }
 .modal-leave-active {
-  animation: open 0.7s reverse ease-in-out;
+  animation: open 0.5s reverse ease-in-out;
 }
 
   @keyframes open {

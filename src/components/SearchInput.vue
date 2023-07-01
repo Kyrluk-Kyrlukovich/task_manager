@@ -9,7 +9,7 @@
           placeholder="Поиск"
       />
       <button class="ml-2">
-        <img src="../assets/search.png" width="18" height="18" />
+        <img src="../assets/search.png" width="18" height="18"/>
       </button>
     </div>
   </div>

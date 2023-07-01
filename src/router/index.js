@@ -14,7 +14,7 @@ const routes = [
     },
 
     {
-        name:'profile',
+        name: 'profile',
         path: '/profile',
         component: ProfilePage
     },
@@ -32,17 +32,17 @@ const routes = [
     },
 
     {
-        name:'channel',
+        name: 'channel',
         path: '/channel/:id',
         component: MainFull
     },
     {
-        name:'choosenDay',
+        name: 'choosenDay',
         path: '/channel/:id/day',
         component: MainFull
     },
     {
-        name:'channelSettings',
+        name: 'channelSettings',
         path: '/channel/:id/settings',
         component: ChannelSettings
     },

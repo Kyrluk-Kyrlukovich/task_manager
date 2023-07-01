@@ -2,7 +2,7 @@
   <div class="flex justify-between h-[10%] w-full">
     <div class="flex flex-wrap w-5/12">
       <h2 class="text-lg font-medium opacity-50 w-full">Сегодня</h2>
-      <h1 class="text-2xl font-semibold w-6/12">{{months[month]}}, {{year}}</h1>
+      <h1 class="text-2xl font-semibold w-6/12">{{ months[month] }}, {{ year }}</h1>
       <div class="w-6/12 flex gap-2">
         <ButtonNextLeft @click="previousMonth"/>
         <ButtonNextRight @click="nextMonth"/>
@@ -19,7 +19,7 @@ import ButtonNextLeft from "@/components/ButtonNextLeft";
 import ButtonNextRight from "@/components/ButtonNextRight";
 import FilterCategory from "@/components/FilterCategory";
 import store from "@/store";
-import { mapActions } from 'vuex';
+import {mapActions} from 'vuex';
 
 export default {
   name: "DateFilter",
@@ -52,7 +52,7 @@ export default {
       if (mutation.type == 'nextMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
-      } else if(mutation.type == 'previousMonth') {
+      } else if (mutation.type == 'previousMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
       }

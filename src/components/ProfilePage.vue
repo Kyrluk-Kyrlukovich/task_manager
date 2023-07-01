@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full grid grid-cols-1 justify-items-center items-center">
+  <div class="h-full w-full grid grid-cols-1 justify-items-center items-center overflow-hidden">
     <router-link to="/" class="fixed left-0 top-0 m-[40px] w-[10%] rounded-[5px]">
       <button
           class="w-[100%] h-fit rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
@@ -11,19 +11,24 @@
           class="h-fit text-center grid grid-cols-1 gap-[10px]">
         <h2 class="text-[20px] font-medium mb-[15%]">Ваш профиль</h2>
         <div>
-          <input type="text" class="p-[5px] rounded-[5px]" v-model="firstName" :disabled="!isEdit" placeholder="Ваше имя"/>
+          <input type="text" class="p-[5px] rounded-[5px]" v-model="firstName" :disabled="!isEdit"
+                 placeholder="Ваше имя"/>
         </div>
         <div>
-          <input type="text" class="p-[5px] rounded-[5px]" v-model="lastName" :disabled="!isEdit" placeholder="Ваша фамилия"/>
+          <input type="text" class="p-[5px] rounded-[5px]" v-model="lastName" :disabled="!isEdit"
+                 placeholder="Ваша фамилия"/>
         </div>
         <div>
-          <input type="text" class="p-[5px] rounded-[5px]" v-model="patronymic" :disabled="!isEdit" placeholder="Ваше отчество"/>
+          <input type="text" class="p-[5px] rounded-[5px]" v-model="patronymic" :disabled="!isEdit"
+                 placeholder="Ваше отчество"/>
         </div>
         <div>
-          <input type="text" class="p-[5px] rounded-[5px]" v-model="phoneUser" :disabled="!isEdit" placeholder="Ваш телефон"/>
+          <input type="text" class="p-[5px] rounded-[5px]" v-model="phoneUser" :disabled="!isEdit"
+                 placeholder="Ваш телефон"/>
         </div>
         <div>
-          <input type="email" class="p-[5px] rounded-[5px]" v-model="email" :disabled="!isEdit" placeholder="Ваш email"/>
+          <input type="email" class="p-[5px] rounded-[5px]" v-model="email" :disabled="!isEdit"
+                 placeholder="Ваш email"/>
         </div>
         <button
             v-if="!isEdit"
@@ -31,11 +36,12 @@
             class="w-[100%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-1">
           Редактировать
         </button>
-          <button
-              v-if="!isEdit"
-              class="w-[100%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
-            Выйти
-          </button>
+        <button
+            @click.stop.prevent="openAcceptModal({bool:true, nameAction:'isLogout'})"
+            v-if="!isEdit"
+            class="w-[100%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
+          Выйти
+        </button>
         <button
             v-if="isEdit"
             @click.prevent="cancel"
@@ -49,13 +55,6 @@
           Сохранить
         </button>
       </form>
-      <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAccept">
-        <transition name="modalAccept">
-          <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200  h-[150px] w-[275px]">
-            <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">{{actions[modalAcceptedAction.currAction].text}}</ModalAcceptedAction>
-          </div>
-        </transition>
-      </div>
     </div>
   </div>
 </template>
@@ -71,11 +70,11 @@ export default {
     return {
       isEdit: false,
 
-      firstName:'',
-      lastName:'',
-      patronymic:'',
-      phoneUser:'',
-      email:'',
+      firstName: '',
+      lastName: '',
+      patronymic: '',
+      phoneUser: '',
+      email: '',
     }
   },
 
@@ -91,9 +90,9 @@ export default {
 
   beforeRouteEnter(to, from, next) {
     let path = to.path.slice(1);
-    if(to.name == 'profile') {
+    if (to.name == 'profile') {
       next((vm) => {
-        if(vm.isAuth) {
+        if (vm.isAuth) {
           vm.fetchData({
             url: path,
             method: 'get',
@@ -101,6 +100,8 @@ export default {
             token: vm.token,
             nameMutation: 'loadInfoUser'
           })
+        } else {
+          vm.$router.push('/')
         }
       });
     } else {
@@ -109,19 +110,25 @@ export default {
   },
 
   created() {
-    store.subscribe((mutation) => {
+    const unsubscribe = store.subscribe((mutation) => {
       if (mutation.type == 'loadInfoUser') {
         this.getValues(this.user)
-      } else if(mutation.type == 'acceptOrNotEditInfoUser') {
-        if(this.actions.isEditInfoUser.isAccept) {
+      } else if (mutation.type == 'acceptOrNotEditInfoUser') {
+        if (this.actions.isEditInfoUser.isAccept) {
           this.save();
         } else {
           this.cancel();
         }
+      } else if (mutation.type == 'acceptOrNotLogout') {
+        if (this.actions.isLogout.isAccept) {
+          unsubscribe();
+          this.logout();
+          this.acceptOrNotLogout(false);
+        }
       }
     })
 
-    if(this.isAuth) {
+    if (this.isAuth) {
       this.fetchData({
         url: this.$route.fullPath.slice(1),
         method: 'get',
@@ -140,8 +147,11 @@ export default {
     ...mapMutations({
       openOrCloseAcceptModal: 'openOrCloseAcceptModal',
       openAcceptModal: 'openAcceptModal',
-      closeAcceptModal: 'closeAcceptModal'
+      closeAcceptModal: 'closeAcceptModal',
+      acceptOrNotLogout: 'acceptOrNotLogout',
+      logoutState: 'logout'
     }),
+
 
     onEdit() {
       this.isEdit = true
@@ -180,6 +190,19 @@ export default {
         nameMutation: 'loadInfoUser'
       })
       this.offEdit();
+    },
+
+    async logout() {
+      await this.fetchData({
+        url: 'logout',
+        method: 'get',
+        body: null,
+        token: localStorage.getItem('token'),
+        nameMutation: 'logout'
+      })
+      localStorage.removeItem('token')
+      this.logoutState();
+      this.$router.go();
     },
 
     cancel() {

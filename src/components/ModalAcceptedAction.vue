@@ -1,45 +1,46 @@
 <template>
-  <div class="grid gap-6 grid-rows-[1fr_1fr]">
+  <div class="grid gap-6 grid-rows-[1fr_1fr] h-full">
     <div class="text-center">
-        <slot></slot>
+      <slot></slot>
     </div>
     <div class="grid grid-cols-2 gap-2">
-        <button @click="accept"
-                class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-2">
-          Да, уверен
-        </button>
-        <button @click="cancel"
-                class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-2">
-          Отмена
-        </button>
+      <button @click="accept"
+              class="w-[100%] h-[90%] rounded-[5px] bg-emerald-400 hover:bg-emerald-600 transition-[background-color] ease-out duration-[0.25s] py-2">
+        Да, уверен
+      </button>
+      <button @click="cancel"
+              class="w-[100%] h-[90%] rounded-[5px] bg-red-600 hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-2">
+        Отмена
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import store from '@/store'
-import { mapMutations } from 'vuex'
+import {mapMutations} from 'vuex'
+
 export default {
-    name: "ModalAcceptedAction",
-    props: {
-        action: Object
+  name: "ModalAcceptedAction",
+  props: {
+    action: Object
+  },
+
+  methods: {
+    ...mapMutations({
+      closeAcceptModal: 'closeAcceptModal'
+    }),
+
+    accept() {
+      store.commit(this.action.nameMutation, true)
+      this.closeAcceptModal();
     },
 
-    methods: {
-        ...mapMutations({
-            closeAcceptModal: 'closeAcceptModal'
-        }),
-
-        accept() {
-            store.commit(this.action.nameMutation, true)
-            this.closeAcceptModal();
-        },
-
-        cancel() {
-            store.commit(this.action.nameMutation, false)
-            this.closeAcceptModal();
-        }
+    cancel() {
+      store.commit(this.action.nameMutation, false)
+      this.closeAcceptModal();
     }
+  }
 
 }
 </script>

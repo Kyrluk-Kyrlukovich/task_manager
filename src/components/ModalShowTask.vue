@@ -13,7 +13,8 @@
           {{ dateStartFormat }}
         </div>
         <transition name="modalSmallChooseTime">
-          <div v-if="isTimeModal" class="h-[250px]  bg-slate-200 absolute top-[110px] left-[150px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isTimeModal"
+               class="h-[250px]  bg-slate-200 absolute top-[110px] left-[150px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallChooseTime @closeSmallTime="closeModalTime" @chooseTime="chooseTime"/>
           </div>
         </transition>
@@ -25,7 +26,8 @@
           }}
         </div>
         <transition name="smallStatus">
-          <div v-if="isStatusModal" class="absolute hover:cursor-pointer top-[160px] left-[140px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isStatusModal"
+               class="absolute hover:cursor-pointer top-[160px] left-[140px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallStatus @chooseStatus="chooseStatus" class="absolute"/>
           </div>
         </transition>
@@ -42,7 +44,8 @@
             </svg>
           </div>
           <transition name="smallColorTask">
-            <div v-if="isColorModal" class="absolute top-[200px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]" >
+            <div v-if="isColorModal"
+                 class="absolute top-[200px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]">
               <SmallColorTask @chooseColor="chooseColor"/>
             </div>
           </transition>
@@ -109,7 +112,7 @@ export default {
   created() {
     this.unsubscribe();
 
-    if(!this.task) {
+    if (!this.task) {
       this.task = {...this.choosenTask}
     }
 
@@ -132,8 +135,8 @@ export default {
     }),
 
     dateStartFormat() {
-      if(this.task) {
-       return `${this.task['date_start'].hour}:${this.task['date_start'].minutes}`;
+      if (this.task) {
+        return `${this.task['date_start'].hour}:${this.task['date_start'].minutes}`;
       }
       return 'null'
     },
@@ -148,7 +151,7 @@ export default {
 
   methods: {
     ...mapActions({
-      fetchData:'fetchData',
+      fetchData: 'fetchData',
 
     }),
 
@@ -161,13 +164,13 @@ export default {
       store.subscribe((mutation) => {
         if (mutation.type == 'changeChoosenTask') {
           this.task = {...mutation.payload}
-        } else if(mutation.type == 'acceptOrNotDeleteTask') {
-          if(this.actions.isDeleteTask.isAccept) {
+        } else if (mutation.type == 'acceptOrNotDeleteTask') {
+          if (this.actions.isDeleteTask.isAccept) {
             this.acceptOrNotDeleteTask(false);
             this.deleteTask();
           }
-        } else if(mutation.type == 'acceptOrNotEditTask') {
-          if(this.actions.isEditTask.isAccept) {
+        } else if (mutation.type == 'acceptOrNotEditTask') {
+          if (this.actions.isEditTask.isAccept) {
             this.updateTask();
           }
         }
@@ -178,15 +181,15 @@ export default {
       const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
       const getNewTasksUrl = this.$route.fullPath.slice(1);
       await this.fetchData({
-        url:deleteTaskUrl,
-        method:'post',
-        body: {id_task:this.task['id_task']},
+        url: deleteTaskUrl,
+        method: 'post',
+        body: {id_task: this.task['id_task']},
         token: this.token,
         nameMutation: null
       })
       await this.fetchData({
-        url:getNewTasksUrl,
-        method:'get',
+        url: getNewTasksUrl,
+        method: 'get',
         body: null,
         token: this.token,
         nameMutation: 'loadTasks'
@@ -196,7 +199,7 @@ export default {
     },
 
     async updateTask() {
-      if(this.isAuth) {
+      if (this.isAuth) {
         let dateStart = this.formatDate(true, this.task['date_start']);
         let timeStart = this.formatTime(this.task['date_start'])
         let date = dateStart + ' ' + timeStart;
@@ -348,12 +351,12 @@ export default {
   animation: open 0.45s reverse ease-in-out;
 }
 
-  @keyframes open {
-    0% {
-      max-height: 0;
-    }
-    100% {
-      max-height: 250px;
-    }
+@keyframes open {
+  0% {
+    max-height: 0;
   }
+  100% {
+    max-height: 250px;
+  }
+}
 </style>

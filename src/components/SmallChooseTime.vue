@@ -44,8 +44,8 @@ export default {
         let hour = i;
         for (let j = 1; j <= 2; j++) {
           let minute = j == 1 ? '00' : '30';
-          if(`${hour}:${minute}` == evt.target.textContent){
-            this.choosenTime = {hour:hour, minutes:minute}
+          if (`${hour}:${minute}` == evt.target.textContent) {
+            this.choosenTime = {hour: hour, minutes: minute}
           }
         }
       }
