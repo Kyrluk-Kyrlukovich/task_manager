@@ -30,6 +30,7 @@ export default createStore({
             id: '',
             functions: []
         },
+        selectCategory:'',
         creatorChannel: false,
 
         modalAcceptedAction: {
@@ -222,6 +223,10 @@ export default createStore({
 
         changeChoosenUserForSetting(state, data) {
             state.choosenUserForSettings.id  = data
+        },
+
+        changeSelectCategory(state, newValue) {
+            state.selectCategory = newValue
         },
 
         fillTime(state) {

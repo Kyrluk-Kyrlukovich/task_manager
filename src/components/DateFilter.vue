@@ -19,6 +19,7 @@ import ButtonNextLeft from "@/components/ButtonNextLeft";
 import ButtonNextRight from "@/components/ButtonNextRight";
 import FilterCategory from "@/components/FilterCategory";
 import store from "@/store";
+import { mapActions } from 'vuex';
 
 export default {
   name: "DateFilter",
@@ -57,9 +58,15 @@ export default {
       }
 
     })
+
+    this.fetchData({url: 'statuses', method: 'get', body: {}, token: null, nameMutation: 'loadStatusesTasks'})
   },
 
   methods: {
+    ...mapActions({
+      fetchData: 'fetchData'
+    }),
+
     nextMonth() {
       this.$emit('nextMonth');
     },

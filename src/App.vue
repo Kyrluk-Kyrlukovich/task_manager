@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full flex bg-slate-300 font-mont">
+  <div class="h-full w-full flex bg-slate-300">
       <router-view></router-view>
       <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAccept">
         <transition name="modalAccept">

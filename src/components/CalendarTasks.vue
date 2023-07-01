@@ -65,6 +65,7 @@ export default {
       currDay: new Date().getDate(),
       currMonth: new Date().getMonth(),
 
+      category: '',
       month: '',
       year: '',
       firstDayOfMonth: '',
@@ -96,6 +97,8 @@ export default {
       } else if(mutation.type == 'loadTasks') {
          this.clearTasks();
         this.fillNewTasks(this.updateDayWithTask(mutation.payload));
+      } else if(mutation.type == 'changeSelectCategory') {
+        this.category = mutation.payload;
       }
     })
     this.updateCalendar();
@@ -106,7 +109,8 @@ export default {
       tasks: state => state.tasks,
       isLoadingTasks: state => state.isLoadingTasks,
       choosenDate: state => state.chooseDate,
-      dayListTask: state => state.dayListTasks
+      dayListTask: state => state.dayListTasks,
+      selectCategory: state => state.selectCategory
     }),
 
     CheckCurrMonth() {
@@ -116,10 +120,6 @@ export default {
         this.formatTaskHead(calendar, this.$refs.day[0]);
       }
       return calendar;
-    },
-
-    sliceTasksArrray(tasks) {
-      return tasks.slice(3)
     },
 
     ...mapGetters({
@@ -172,6 +172,13 @@ export default {
 
     previousMonth() {
       store.commit('previousMonth');
+    },
+
+    sortTaskByCategory(tasks) {
+      if(this.category == '') {
+        return tasks
+      }
+      return tasks.filter(el => el.status['name_status'] == this.category)
     },
 
     updateCalendar() {
@@ -256,7 +263,7 @@ export default {
           let dayTasks = tasks.filter(
               task => +task['date_start'].day == day.day && +task['date_start'].month == (day.month + 1) && +task['date_start'].year == day.year
           );
-          day.tasks = [...dayTasks]
+          day.tasks = this.sortTaskByCategory(dayTasks)
         })
       })
     }
