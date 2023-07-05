@@ -294,7 +294,6 @@ export default {
     },
 
     chooseTime(time) {
-      console.log(time);
       this.task['date_start'].hour = time.hour
       this.task['date_start'].minutes = time.minutes
       this.closeModalTime()

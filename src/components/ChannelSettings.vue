@@ -84,7 +84,7 @@
                       class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
     </div>
   </transition>
-  <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAcceptModal">
+  <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute">
     <transition name="modalAccept">
       <div v-if="modalAcceptedAction.isOpen" @click.stop
            class="absolute p-5 z-20 h-[150px] w-[300px] opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200">
@@ -148,27 +148,6 @@ export default {
     }
   },
 
-  created() {
-    this.channelName = this.choosenSettingsChannel;
-
-    store.subscribe((mutation) => {
-      if (mutation.type == 'acceptOrNotDeleteChannel') {
-        if (this.actions.isDeleteChannel.isAccept) {
-          this.deleteChannel();
-        }
-      } else if (mutation.type == 'acceptOrNotEditChannel') {
-        if (this.actions.isEditChannel.isAccept) {
-          this.saveChanges();
-        }
-      } else if (mutation.type == 'acceptOrNotLeaveChannel') {
-        if (this.actions.isLeaveChannel.isAccept) {
-          this.leaveFromChannel();
-          this.acceptOrNotLeaveChannel(false)
-        }
-      }
-    })
-  },
-
   computed: {
     ...mapState({
       choosenSettingsChannel: state => state.choosenSettingsChannel,
@@ -181,13 +160,37 @@ export default {
     }),
   },
 
+  created() {
+    this.channelName = this.choosenSettingsChannel;
+    const unsubscribe = store.subscribe((mutation) => {
+      if (mutation.type == 'acceptOrNotDeleteChannel') {
+        if (this.actions.isDeleteChannel.isAccept) {
+          this.deleteChannel();
+          unsubscribe();
+        }
+      } else if (mutation.type == 'acceptOrNotEditChannel') {
+        if (this.actions.isEditChannel.isAccept) {
+          setTimeout(this.saveChanges, 1);
+          this.acceptOrNotEditChannel(false);
+        }
+      } else if (mutation.type == 'acceptOrNotLeaveChannel') {
+        if (this.actions.isLeaveChannel.isAccept) {
+          this.leaveFromChannel();
+          this.acceptOrNotLeaveChannel(false)
+          unsubscribe();
+        }
+      }
+    }, { prepend: true })
+  },
+
   methods: {
     ...mapMutations({
       changeChoosenSettingsChannel: 'changeChoosenSettingsChannel',
       changeChoosenUserForSetting: 'changeChoosenUserForSetting',
       openOrCloseAcceptModal: 'openOrCloseAcceptModal',
       openAcceptModal: 'openAcceptModal',
-      acceptOrNotLeaveChannel: 'acceptOrNotLeaveChannel'
+      acceptOrNotLeaveChannel: 'acceptOrNotLeaveChannel',
+      acceptOrNotEditChannel: 'acceptOrNotEditChannel'
     }),
 
     async deleteChannel() {
@@ -286,7 +289,6 @@ export default {
     saveChanges() {
       this.changeChoosenSettingsChannel(this.channelName)
       let path = this.$route.fullPath.substring(1)
-      console.log(this.channelName);
       this.fetchData({url: path, method: 'post', body: {'name_channel': this.channelName}, token: this.token})
       this.offEdit();
     }
