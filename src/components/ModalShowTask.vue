@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-full">
     <div class="h-full w-full grid grid-cols-1 gap-[15px] px-6 py-8">
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
         <h3>Заголовок:</h3>
@@ -294,8 +294,9 @@ export default {
     },
 
     chooseTime(time) {
+      console.log(time);
       this.task['date_start'].hour = time.hour
-      this.task['date_start'].minutes = time.minute
+      this.task['date_start'].minutes = time.minutes
       this.closeModalTime()
     },
 
@@ -306,7 +307,6 @@ export default {
 
     chooseColor(color) {
       this.task.color = color
-      this.closeModalColor()
     }
   }
 }
