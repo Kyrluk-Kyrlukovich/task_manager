@@ -164,7 +164,7 @@ export default createStore({
         },
 
         clearAllTasks(state) {
-          state.tasks = []
+            state.tasks = []
         },
 
         changeListTask(state, bool) {
@@ -384,6 +384,9 @@ export default createStore({
                 commit('changeStatusIsError', true)
                 if (e.response.status == 401) {
                     commit('changeTextError', 'Вы не авторизованы')
+                } else if (e.response.status == 403) {
+                    const error = e.response.data.data.message
+                    commit('changeTextError', error)
                 } else {
                     const error = JSON.parse(e.response.request.responseText).error
                     if (error.message == 'Validation failed') {

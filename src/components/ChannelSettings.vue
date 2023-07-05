@@ -166,6 +166,7 @@ export default {
       if (mutation.type == 'acceptOrNotDeleteChannel') {
         if (this.actions.isDeleteChannel.isAccept) {
           this.deleteChannel();
+          this.acceptOrNotDeleteChannel(false);
           unsubscribe();
         }
       } else if (mutation.type == 'acceptOrNotEditChannel') {
@@ -190,7 +191,8 @@ export default {
       openOrCloseAcceptModal: 'openOrCloseAcceptModal',
       openAcceptModal: 'openAcceptModal',
       acceptOrNotLeaveChannel: 'acceptOrNotLeaveChannel',
-      acceptOrNotEditChannel: 'acceptOrNotEditChannel'
+      acceptOrNotEditChannel: 'acceptOrNotEditChannel',
+      acceptOrNotDeleteChannel: 'acceptOrNotDeleteChannel'
     }),
 
     async deleteChannel() {
