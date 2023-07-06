@@ -385,7 +385,8 @@ export default createStore({
                 if (e.response.status == 401) {
                     commit('changeTextError', 'Вы не авторизованы')
                 } else if (e.response.status == 403) {
-                    const error = e.response.data.data.message
+                    console.log(e.response)
+                    const error = e.response.data.error.message
                     commit('changeTextError', error)
                 } else {
                     const error = JSON.parse(e.response.request.responseText).error
