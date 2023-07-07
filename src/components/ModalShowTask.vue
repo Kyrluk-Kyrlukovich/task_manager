@@ -9,9 +9,20 @@
       </div>
       <div class="w-full grid grid-cols-[100px_1fr] gap-[10px]">
         <div><img src="../assets/wall_clock.png" alt=""></div>
-        <div @click="openOrCloseModalTime" class="rounded-[5px] p-1 h-[30px] bg-slate-200" :class="editClass">
-          {{ dateStartFormat }}
+        <div class="grid grid-cols-[2fr_1fr]">
+          <div @click="openCalendar"
+             class="p-2 rounded" :class="editClass">
+          {{ chooseDateTask.day }} {{ this.shortedNameMonths[chooseDateTask.month] }} {{ chooseDateTask.year }}
+          </div>
+          <div @click="openOrCloseModalTime" class="rounded-[5px] p-2 h-full w-full bg-slate-200" :class="editClass">
+            {{ dateStartFormat }}
+          </div>
         </div>
+        <transition name="modalSmallCalendar" class="hover:cursor-pointer">
+          <div v-if="isCalendar" class="absolute left-[50px] top-[120px] h-[210px] bg-slate-200 w-[300px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+            <SmallCalendar @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"/>
+          </div>
+        </transition>
         <transition name="modalSmallChooseTime">
           <div v-if="isTimeModal" class="h-[250px]  bg-slate-200 absolute top-[110px] left-[150px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallChooseTime @closeSmallTime="closeModalTime" @chooseTime="chooseTime"/>
@@ -89,11 +100,12 @@ import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import SmallColorTask from "@/components/SmallColorTask";
 import SmallChooseTime from "@/components/SmallChooseTime";
 import SmallStatus from "@/components/SmallStatus";
+import SmallCalendar from "@/components/SmallCalendar";
 import store from "@/store";
 
 export default {
   name: "ModalShowTask",
-  components: {SmallColorTask, SmallChooseTime, SmallStatus},
+  components: {SmallColorTask, SmallChooseTime, SmallStatus, SmallCalendar},
 
   data() {
     return {
@@ -101,17 +113,49 @@ export default {
       isEditTask: false,
       isColorModal: false,
       isTimeModal: false,
+      isCalendar: false,
       isStatusModal: false,
-      task: null
+      task: null,
+      chooseDateTask:'',
+      shortedNameMonths: [
+        'Янв',
+        'Фев',
+        'Март',
+        'Апр',
+        'Май',
+        'Июнь',
+        'Июль',
+        'Авг',
+        'Сен',
+        'Окт',
+        'Нояб',
+        'Дек',
+      ],
     }
   },
 
   created() {
-    this.unsubscribe();
+    const unsubscribe = store.subscribe((mutation) => {
+        if (mutation.type == 'changeChoosenTask') {
+          this.task = {...mutation.payload}
+        } else if(mutation.type == 'acceptOrNotDeleteTask') {
+          if(this.actions.isDeleteTask.isAccept) {
+            this.acceptOrNotDeleteTask(false);
+            this.deleteTask();
+            unsubscribe();
+          }
+        } else if(mutation.type == 'acceptOrNotEditTask') {
+          if(this.actions.isEditTask.isAccept) {
+            this.updateTask();
+          }
+        }
+      })
 
     if(!this.task) {
       this.task = {...this.choosenTask}
     }
+
+    this.chooseDateTask = {day: +this.task['date_start'].day, month: +this.task['date_start'].month - 1, year: this.task['date_start'].year};
 
     this.fetchData({url: 'task-color', method: 'get', body: {}, token: null, nameMutation: 'loadColorsTask'})
     this.fetchData({url: 'statuses', method: 'get', body: {}, token: null, nameMutation: 'loadStatusesTasks'})
@@ -122,7 +166,7 @@ export default {
       choosenTask: state => state.choosenTask,
       token: state => state.token,
       isAuth: state => state.isAuth,
-      actions: state => state.actions
+      actions: state => state.actions,
     }),
 
     ...mapGetters({
@@ -157,23 +201,6 @@ export default {
       acceptOrNotDeleteTask: 'acceptOrNotDeleteTask'
     }),
 
-    unsubscribe() {
-      store.subscribe((mutation) => {
-        if (mutation.type == 'changeChoosenTask') {
-          this.task = {...mutation.payload}
-        } else if(mutation.type == 'acceptOrNotDeleteTask') {
-          if(this.actions.isDeleteTask.isAccept) {
-            this.acceptOrNotDeleteTask(false);
-            this.deleteTask();
-          }
-        } else if(mutation.type == 'acceptOrNotEditTask') {
-          if(this.actions.isEditTask.isAccept) {
-            this.updateTask();
-          }
-        }
-      })
-    },
-
     async deleteTask() {
       const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
       const getNewTasksUrl = this.$route.fullPath.slice(1);
@@ -192,12 +219,11 @@ export default {
         nameMutation: 'loadTasks'
       })
       this.closeModalShowTask()
-      this.unsubscribe();
     },
 
     async updateTask() {
       if(this.isAuth) {
-        let dateStart = this.formatDate(true, this.task['date_start']);
+        let dateStart = this.formatDate(false, this.chooseDateTask);
         let timeStart = this.formatTime(this.task['date_start'])
         let date = dateStart + ' ' + timeStart;
         let path = this.$route.path.slice(1)
@@ -229,6 +255,15 @@ export default {
       }
     },
 
+    closeSmallCalendar() {
+      this.isCalendar = false;
+    },
+
+    chooseDate(date) {
+      this.chooseDateTask = {...date}
+      this.isCalendar = false;
+    },
+
     offDisable() {
       this.isDisabled = false
     },
@@ -252,7 +287,20 @@ export default {
     },
 
     closeModalShowTask() {
+      console.log('work');
       this.$emit('closeModalShowTask')
+    },
+
+    openCalendar() {
+    if(this.isEditTask) 
+      if(this.isCalendar) {
+        this.closeSmallCalendar()
+      } else {
+        this.isTimeModal = false;
+        this.isStatusModal = false;
+        this.isCalendar = true;
+        this.isColorModal = false;
+      }
     },
 
     openOrCloseModalTime() {

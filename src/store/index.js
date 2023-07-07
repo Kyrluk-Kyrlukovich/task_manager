@@ -360,9 +360,7 @@ export default createStore({
                 return response;
             } catch (e) {
                 commit('changeStatusIsError', true)
-                console.log(e.response);
                 const error = JSON.parse(e.response.request.responseText).error
-                console.log(error);
                 if(error.message == 'Validation failed') {
                     const messgesResponse = error.errors
                     let fullMessageResponse = '';
@@ -377,7 +375,6 @@ export default createStore({
                 }
                 
                 setTimeout(() => commit('changeStatusIsError', false), 3000)
-                //alert(e + params.nameMutation);
                 return 'error'
             } finally {
                 commit('isLoading', false);
