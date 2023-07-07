@@ -1,6 +1,8 @@
 <template>
   <div class="h-[10%] w-full p-2 flex text-xl font-semibold ">
-    <div v-if="choosenDate" class="w-full h-fit text-start self-end mt-auto">{{months[choosenDate.month]}}, {{choosenDate.day}}</div>
+    <div v-if="choosenDate" class="w-full h-fit text-start self-end mt-auto">{{ months[choosenDate.month] }},
+      {{ choosenDate.day }}
+    </div>
     <div v-if="!choosenDate" class="w-full h-fit text-center my-auto"></div>
   </div>
 </template>
@@ -30,7 +32,7 @@ export default {
     }
   },
 
-  computed:{
+  computed: {
     ...mapState({
       choosenDate: state => state.chooseDate
     })

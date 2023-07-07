@@ -23,12 +23,12 @@
               :key="item"
               :class=classObject(item)
               @click="showDayWithTask(item)"
-              class="flex text-[14px] flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] p-1 border-slate-300"
+              class="flex text-[0.9em] px-2 py-1 flex-col justify-start border-r-[2px] last-of-type:border-r-[0px] border-slate-300"
               ref="day"
           >
             <div v-for="task in item.tasks.slice(0, 3)" :key="task.id"
                  class="h-[20%] w-full my-1 rounded-r-[7px] border-l-[3px] border-lime-600">
-              <div class="absolute p-1">{{ task['head_task'] }}</div>
+              <div class="absolute pl-1 pt-[0.1%]">{{ task['head_task'] }}</div>
               <div class="h-full rounded-r-[7px] opacity-25" :class="task.color['name_color']"></div>
             </div>
             <div v-if="item.tasks.length > 3" class="h-[10px] text-[16px]">...</div>
@@ -94,10 +94,10 @@ export default {
       } else if (mutation.type == 'previousMonth') {
         this.month = store.state.month;
         this.year = store.state.year;
-      } else if(mutation.type == 'loadTasks') {
-         this.clearTasks();
+      } else if (mutation.type == 'loadTasks') {
+        this.clearTasks();
         this.fillNewTasks(this.updateDayWithTask(mutation.payload));
-      } else if(mutation.type == 'changeSelectCategory') {
+      } else if (mutation.type == 'changeSelectCategory') {
         this.category = mutation.payload;
       }
     })
@@ -147,6 +147,7 @@ export default {
     },
 
     showDayWithTask(data) {
+      console.log(data)
       this.changeChoosenDate({
         month: data.month,
         day: data.day,
@@ -175,7 +176,7 @@ export default {
     },
 
     sortTaskByCategory(tasks) {
-      if(this.category == '') {
+      if (this.category == '') {
         return tasks
       }
       return tasks.filter(el => el.status['name_status'] == this.category)

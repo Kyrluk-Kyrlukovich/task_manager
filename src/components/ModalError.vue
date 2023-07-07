@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: 'ModalError',
+  name: 'ModalError',
 
 }
 </script>

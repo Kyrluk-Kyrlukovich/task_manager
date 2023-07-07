@@ -3,7 +3,8 @@
     <router-link to="/profile" class="p-3 hover:bg-slate-100 transition-[background-color] ease-out rounded-top-[5px]">
       <div class="p-1">Профиль</div>
     </router-link>
-    <router-link to="/" @click.stop="openAcceptModal({bool:true, nameAction:'isLogout'})" class="p-3 hover:bg-slate-100 transition-[background-color] ease-out">
+    <router-link to="/" @click.stop="openAcceptModal({bool:true, nameAction:'isLogout'})"
+                 class="p-3 hover:bg-slate-100 transition-[background-color] ease-out">
       <div class="p-1">Выйти</div>
     </router-link>
   </div>
@@ -16,7 +17,7 @@ import store from "@/store";
 export default {
   name: "ProfileModal",
 
-  computed:{
+  computed: {
     ...mapState({
       token: state => state.token,
       actions: state => state.actions
@@ -24,25 +25,21 @@ export default {
   },
 
   created() {
-    this.unsubscribe()
+    const unsubscribe = store.subscribe((mutation) => {
+      if (mutation.type == 'acceptOrNotLogout') {
+        if (this.actions.isLogout.isAccept) {
+          unsubscribe();
+          this.acceptOrNotLogout(false)
+          this.logout();
+        }
+      }
+    })
   },
 
-  methods:{
+  methods: {
     ...mapActions({
       fetchData: 'fetchData'
     }),
-
-    unsubscribe() {
-      return store.subscribe((mutation) => {
-        if (mutation.type == 'acceptOrNotLogout') {
-          if(this.actions.isLogout.isAccept) {
-            this.acceptOrNotLogout(false)
-            this.logout();
-            this.unsubscribe()
-          }
-        }
-      })
-    },
 
     ...mapMutations({
       acceptOrNotLogout: 'acceptOrNotLogout'
@@ -65,6 +62,7 @@ export default {
       localStorage.removeItem('token')
       this.logoutState()
       this.closeProfileModal()
+      this.$router.go()
     }
   }
 }

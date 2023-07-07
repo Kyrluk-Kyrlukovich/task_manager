@@ -10,7 +10,7 @@
 import NavMenu from "@/components/NavMenu";
 import MainTop from "@/components/MainTop";
 import MainBottom from "@/components/MainBottom";
-import {mapState, mapActions} from "vuex";
+import {mapState, mapActions, mapMutations} from "vuex";
 
 export default {
   name: "MainFull",
@@ -19,7 +19,8 @@ export default {
   computed: {
     ...mapState({
       isAuth: state => state.isAuth,
-      token: state => state.token
+      token: state => state.token,
+      isListTask: state => state.isListTask
     }),
 
     navMenuDisplay: function () {
@@ -30,9 +31,9 @@ export default {
   beforeRouteEnter(to, from, next) {
     let path = to.path.slice(1, to.path.length);
 
-    if(to.name == 'main') {
+    if (to.name == 'main') {
       next((vm) => {
-        if(vm.isAuth) {
+        if (vm.isAuth) {
           vm.fetchData({
             url: 'profile',
             method: 'get',
@@ -44,9 +45,9 @@ export default {
       });
     }
 
-    if(to.name == 'channel' && (to.params.id != from.params.id)) {
+    if (to.name == 'channel' && (to.params.id != from.params.id)) {
       next((vm) => {
-        if(vm.isAuth) {
+        if (vm.isAuth) {
           vm.fetchData({
             url: path,
             method: 'get',
@@ -55,17 +56,29 @@ export default {
             nameMutation: 'loadTasks'
           })
         }
+
+        if (vm.$route.name == 'channel' || vm.$route.name == 'choosenDay') {
+          vm.changeListTask(true)
+        } else {
+          vm.changeListTask(false)
+        }
       });
     } else {
       next();
     }
   },
 
+  beforeRouteLeave(to, from, next) {
+    if(from.name == 'channel') {
+      this.clearAllTasks()
+    }
+    next()
+  },
+
   beforeRouteUpdate(to, from, next) {
     let path = to.path.slice(1, to.path.length);
-    console.log(to, from)
-    if(to.name == 'channel' && (to.params.id != from.params.id)) {
-      if(this.isAuth) {
+    if (to.name == 'channel' && (to.params.id != from.params.id)) {
+      if (this.isAuth) {
         this.fetchData({
           url: path,
           method: 'get',
@@ -85,6 +98,12 @@ export default {
     if (this.isAuth) {
       this.tryGetChannels()
     }
+
+    if (this.$route.name == 'channel' || this.$route.name == 'choosenDay') {
+      this.changeListTask(true)
+    } else {
+      this.changeListTask(false)
+    }
   },
 
   methods: {
@@ -92,8 +111,13 @@ export default {
       fetchData: 'fetchData'
     }),
 
+    ...mapMutations({
+      changeListTask: 'changeListTask',
+      clearAllTasks: 'clearAllTasks'
+    }),
+
     async tryGetChannels() {
-        await this.fetchData({
+      await this.fetchData({
         url: 'channels',
         method: 'get',
         body: {},

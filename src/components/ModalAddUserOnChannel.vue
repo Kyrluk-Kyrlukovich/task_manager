@@ -3,7 +3,7 @@
     <div
         @click="closeModalAddUserOnChannel"
         class=" absolute left-[-20] top-0 m-[20px] w-[40px] rounded-[5px] hover:cursor-pointer">
-      <img src="../assets/btn_closed.svg" />
+      <img src="../assets/btn_closed.svg"/>
     </div>
     <input type="search" v-model="search" class="rounded-[5px] p-2 h-[30px] justify-self-center">
     <div class="relative overflow-hidden ">
@@ -13,9 +13,10 @@
           <div><img src="../assets/user.png" alt="Пользователь" width="40" height="40">
           </div>
           <div>{{ user['first_name'] }} {{ user['last_name'] }}</div>
-          <div class="self-center"><img @click="addUser(user['id_user'])" class="hover:cursor-pointer" src="../assets/plus.png"
-                                                              width="20" height="20"
-                                                              alt="Добавить участника участника"></div>
+          <div class="self-center"><img @click="addUser(user['id_user'])" class="hover:cursor-pointer"
+                                        src="../assets/plus.png"
+                                        width="20" height="20"
+                                        alt="Добавить участника участника"></div>
         </div>
       </div>
     </div>
@@ -68,9 +69,9 @@ export default {
     addUser(idUser) {
       const path = this.$route.fullPath.slice(1) + '/adduser'
       this.fetchData({
-        url:path,
+        url: path,
         method: 'post',
-        body:{
+        body: {
           id_user: idUser
         },
         token: this.token

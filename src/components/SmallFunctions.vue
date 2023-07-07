@@ -66,12 +66,12 @@ export default {
     })
 
     store.subscribe((mutation) => {
-    if(mutation.type == 'acceptOrNotDeleteUserFromChannel') {
-        if(this.actions.isDeleteUserFromChannel.isAccept) {
+      if (mutation.type == 'acceptOrNotDeleteUserFromChannel') {
+        if (this.actions.isDeleteUserFromChannel.isAccept) {
           this.deleteUserFromChannel();
         }
-      } else if(mutation.type == 'acceptOrNotEditUserFunction') {
-        if(this.actions.isEditUserFunction.isAccept) {
+      } else if (mutation.type == 'acceptOrNotEditUserFunction') {
+        if (this.actions.isEditUserFunction.isAccept) {
           this.save();
           this.closeSmallFunctions();
         }

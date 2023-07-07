@@ -21,17 +21,19 @@
           {{ chooseDateTask.day }} {{ this.shortedNameMonths[chooseDateTask.month] }} {{ chooseDateTask.year }}
         </div>
         <transition name="modalSmallCalendar" class="hover:cursor-pointer">
-          <div v-if="isCalendar" class="absolute left-[100px] top-[150px] h-[210px] bg-slate-200 w-[300px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isCalendar"
+               class="absolute left-[100px] top-[150px] h-[210px] bg-slate-200 w-[300px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallCalendar @closeSmallCalendar="closeSmallCalendar" @chooseDate="chooseDate"/>
           </div>
         </transition>
-        
+
         <div class="p-2 hover:bg-slate-300 rounded transition-[background-color] duration-[0.25s] ease-out"
              @click="openTime"
         >{{ chooseTimeTask.hour }}:{{ chooseTimeTask.minutes }}
         </div>
         <transition name="modalSmallChooseTime">
-          <div v-if="isTime" class="h-[250px]  bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isTime"
+               class="h-[250px]  bg-slate-200 absolute top-[140px] left-[170px]  w-[150px] text-[12px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallChooseTime @closeSmallTime="closeSmallTime" @chooseTime="chooseTime"/>
           </div>
         </transition>
@@ -52,11 +54,12 @@
           </div>
         </div>
         <transition name="smallStatus">
-          <div v-if="isStatus" class="absolute hover:cursor-pointer top-[200px] left-[190px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
+          <div v-if="isStatus"
+               class="absolute hover:cursor-pointer top-[200px] left-[190px] h-[120px] bg-slate-200 w-[200px] shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px] overflow-hidden">
             <SmallStatus @chooseStatus="chooseStatus"/>
           </div>
         </transition>
-        
+
       </div>
       <div class="flex gap-x-4">
         <div class="p-2">Выберите цвет:</div>
@@ -73,8 +76,9 @@
           </div>
         </div>
         <transition name="smallColorTask">
-          <div v-if="isColor" class="absolute top-[260px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]" >
-            <SmallColorTask @chooseColor="chooseColor" />
+          <div v-if="isColor"
+               class="absolute top-[260px] left-[170px] overflow-hidden bg-slate-200 shadow-[0px_4px_12px_6px_rgba(34,60,80,0.2)] rounded-[5px]">
+            <SmallColorTask @chooseColor="chooseColor"/>
           </div>
         </transition>
       </div>
@@ -120,7 +124,7 @@ export default {
       textTask: '',
       chooseStatusTask: {id_status: 1, name_status: 'Срочно и важно'},
       chooseDateTask: '',
-      chooseColorTask: {id_color:1, name_color:'black', tag_color:'c70500'},
+      chooseColorTask: {id_color: 1, name_color: 'black', tag_color: 'c70500'},
       chooseTimeTask: {hour: 12, minutes: '00'},
       shortedNameMonths: [
         'Янв',
@@ -186,21 +190,21 @@ export default {
         nameMutation: null,
       })
 
-      if(this.isAuth) {
-          this.fetchData({
-            url: this.$route.fullPath.slice(1),
-            method: 'get',
-            body: null,
-            token: this.token,
-            nameMutation: 'loadTasks'
-          })
-        }
+      if (this.isAuth) {
+        this.fetchData({
+          url: this.$route.fullPath.slice(1),
+          method: 'get',
+          body: null,
+          token: this.token,
+          nameMutation: 'loadTasks'
+        })
+      }
 
       this.closeModalWindow();
     },
 
     openTime() {
-      if(this.isTime) {
+      if (this.isTime) {
         this.closeSmallTime()
       } else {
         this.isCalendar = false;
@@ -230,7 +234,7 @@ export default {
     },
 
     openCalendar() {
-      if(this.isCalendar) {
+      if (this.isCalendar) {
         this.closeSmallCalendar()
       } else {
         this.isTime = false;
@@ -309,12 +313,12 @@ export default {
   animation: open 0.45s reverse ease-in-out;
 }
 
-  @keyframes open {
-    0% {
-      max-height: 0;
-    }
-    100% {
-      max-height: 250px;
-    }
+@keyframes open {
+  0% {
+    max-height: 0;
   }
+  100% {
+    max-height: 250px;
+  }
+}
 </style>

@@ -18,10 +18,10 @@ export default createStore({
         colorsTasks: [],
         statusesTasks: [],
         defaultColor: 'black',
-        usersChannel:[],
+        usersChannel: [],
         users: [],
-        user:[],
-        usersFunctions:[],
+        user: [],
+        usersFunctions: [],
 
         chooseDate: null,
         choosenTask: null,
@@ -30,13 +30,16 @@ export default createStore({
             id: '',
             functions: []
         },
-        selectCategory:'',
+        selectCategory: '',
         creatorChannel: false,
 
         modalAcceptedAction: {
             isOpen: false,
             currAction: null
-        } ,
+        },
+
+        isListTask: false,
+
         actions: {
             isDeleteTask: {
                 isAccept: false,
@@ -60,6 +63,12 @@ export default createStore({
                 isAccept: false,
                 text: 'Вы уверены что хотите удалить канал?',
                 nameMutation: 'acceptOrNotDeleteChannel'
+            },
+
+            isLeaveChannel: {
+                isAccept: false,
+                text: 'Вы уверены что хотите выйти?',
+                nameMutation: 'acceptOrNotLeaveChannel'
             },
 
             isEditChannel: {
@@ -89,7 +98,7 @@ export default createStore({
 
         errorAction: {
             isError: false,
-            text:null,
+            text: null,
         },
 
         isLoadingTasks: true,
@@ -114,7 +123,7 @@ export default createStore({
             const findedTasks = []
             state.tasks.forEach(task => {
                 data.forEach(calendarTask => {
-                    if(task['id_task'] == calendarTask['id_task']) {
+                    if (task['id_task'] == calendarTask['id_task']) {
                         findedTasks.push(task)
                     }
                 })
@@ -154,7 +163,15 @@ export default createStore({
             }
         },
 
-        changeStatusIsError(state, bool){
+        clearAllTasks(state) {
+            state.tasks = []
+        },
+
+        changeListTask(state, bool) {
+            state.isListTask = bool
+        },
+
+        changeStatusIsError(state, bool) {
             state.errorAction.isError = bool
         },
 
@@ -180,10 +197,14 @@ export default createStore({
 
         acceptOrNotEditChannel(state, bool) {
             state.actions.isEditChannel.isAccept = bool
-        }, 
+        },
 
         acceptOrNotDeleteUserFromChannel(state, bool) {
             state.actions.isDeleteUserFromChannel.isAccept = bool
+        },
+
+        acceptOrNotLeaveChannel(state, bool) {
+            state.actions.isLeaveChannel.isAccept = bool
         },
 
         acceptOrNotEditUserFunction(state, bool) {
@@ -194,13 +215,12 @@ export default createStore({
             state.actions.isLogout.isAccept = bool
         },
 
-        
 
         openAcceptModal(state, obj) {
             state.modalAcceptedAction.isOpen = obj.bool
             state.modalAcceptedAction.currAction = obj.nameAction
         },
-        
+
         closeAcceptModal(state) {
             state.modalAcceptedAction.isOpen = false
         },
@@ -222,7 +242,7 @@ export default createStore({
         },
 
         changeChoosenUserForSetting(state, data) {
-            state.choosenUserForSettings.id  = data
+            state.choosenUserForSettings.id = data
         },
 
         changeSelectCategory(state, newValue) {
@@ -342,17 +362,19 @@ export default createStore({
                 commit('isLoading', true);
                 let response;
                 if (params.method == 'get') {
-                    response = await  axios({
+                    response = await axios({
                         method: params.method,
                         url: urlFetch,
                         data: JSON.stringify(params.body),
-                        headers: headers});
+                        headers: headers
+                    });
                 } else {
                     response = await axios({
                         method: params.method,
                         url: urlFetch,
                         data: JSON.stringify(params.body),
-                        headers: headers}); 
+                        headers: headers
+                    });
                 }
                 if (params.nameMutation) {
                     commit(params.nameMutation, response.data.data);
@@ -371,7 +393,18 @@ export default createStore({
                     console.log(error.errors);
                     commit('changeTextError', fullMessageResponse)
                 } else {
-                    commit('changeTextError', error.message)
+                    const error = JSON.parse(e.response.request.responseText).error
+                    if (error.message == 'Validation failed') {
+                        const messgesResponse = error.errors
+                        let fullMessageResponse = '';
+                        for (let key in messgesResponse) {
+                            fullMessageResponse += messgesResponse[key][0]
+                            fullMessageResponse += ' '
+                        }
+                        commit('changeTextError', fullMessageResponse)
+                    } else {
+                        commit('changeTextError', error.message)
+                    }
                 }
                 
                 setTimeout(() => commit('changeStatusIsError', false), 3000)

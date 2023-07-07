@@ -39,7 +39,7 @@
       </div>
       <div v-if="!isEdit && !creator">
         <button
-            @click="leaveFromChannel"
+            @click="openAcceptModal({bool:true, nameAction: 'isLeaveChannel'})"
             class="w-[100%] h-full rounded-[5px] bg-red-600 hover:cursor-pointer hover:bg-red-800 transition-[background-color] ease-out duration-[0.25s] py-1">
           Покинуть канал
         </button>
@@ -72,21 +72,25 @@
       </div>
     </div>
     <transition name="modalAddUser">
-      <div v-if="isModalAddUserOnChannel" class="h-[410px] w-[500px] overflow-hidden bg-slate-300 absolute left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]">
-        <ModalAddUserOnChannel  @closeModalAddUserOnChannel="closeModalAddUserOnChannel"/>
+      <div v-if="isModalAddUserOnChannel"
+           class="h-[410px] w-[500px] overflow-hidden bg-slate-300 absolute left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]">
+        <ModalAddUserOnChannel @closeModalAddUserOnChannel="closeModalAddUserOnChannel"/>
       </div>
     </transition>
   </div>
-    <transition name="modal">
-      <div v-show="isAddFunctions" ref="modal" class="absolute h-[250px] w-[250px] right-0 top-0">
-          <SmallFunctions  @closeSmallFunctions="closeSmallFunctions"
-            class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
-      </div>
+  <transition name="modal">
+    <div v-show="isAddFunctions" ref="modal" class="absolute h-[250px] w-[250px] right-0 top-0">
+      <SmallFunctions @closeSmallFunctions="closeSmallFunctions"
+                      class=" h-full w-full absolute bg-slate-300 shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] rounded-[10px]"/>
+    </div>
   </transition>
-  <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute" @click="closeAcceptModal">
+  <div v-show="modalAcceptedAction.isOpen" class="h-full w-full z-10 absolute">
     <transition name="modalAccept">
-      <div v-if="modalAcceptedAction.isOpen" @click.stop class="absolute p-5 z-20 h-[150px] w-[300px] opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200">
-        <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">{{actions[modalAcceptedAction.currAction].text}}</ModalAcceptedAction>
+      <div v-if="modalAcceptedAction.isOpen" @click.stop
+           class="absolute p-5 z-20 h-[150px] w-[300px] opacity-100 overflow-hidden left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-[10px] shadow-[1px_3px_27px_8px_rgba(34,60,80,0.2)] bg-slate-200">
+        <ModalAcceptedAction :action="actions[modalAcceptedAction.currAction]">
+          {{ actions[modalAcceptedAction.currAction].text }}
+        </ModalAcceptedAction>
       </div>
     </transition>
   </div>
@@ -144,22 +148,6 @@ export default {
     }
   },
 
-  created() {
-    this.channelName = this.choosenSettingsChannel;
-
-    store.subscribe((mutation) => {
-    if(mutation.type == 'acceptOrNotDeleteChannel') {
-        if(this.actions.isDeleteChannel.isAccept) {
-          this.deleteChannel();
-        }
-      } else if(mutation.type == 'acceptOrNotEditChannel') {
-        if(this.actions.isEditChannel.isAccept) {
-          this.saveChanges();
-        }
-      }
-    })
-  },
-
   computed: {
     ...mapState({
       choosenSettingsChannel: state => state.choosenSettingsChannel,
@@ -168,8 +156,32 @@ export default {
       usersChannel: state => state.usersChannel,
       creator: state => state.creatorChannel,
       modalAcceptedAction: state => state.modalAcceptedAction,
-      actions: state => state.actions
+      actions: state => state.actions,
     }),
+  },
+
+  created() {
+    this.channelName = this.choosenSettingsChannel;
+    const unsubscribe = store.subscribe((mutation) => {
+      if (mutation.type == 'acceptOrNotDeleteChannel') {
+        if (this.actions.isDeleteChannel.isAccept) {
+          this.deleteChannel();
+          this.acceptOrNotDeleteChannel(false);
+          unsubscribe();
+        }
+      } else if (mutation.type == 'acceptOrNotEditChannel') {
+        if (this.actions.isEditChannel.isAccept) {
+          setTimeout(this.saveChanges, 1);
+          this.acceptOrNotEditChannel(false);
+        }
+      } else if (mutation.type == 'acceptOrNotLeaveChannel') {
+        if (this.actions.isLeaveChannel.isAccept) {
+          this.leaveFromChannel();
+          this.acceptOrNotLeaveChannel(false)
+          unsubscribe();
+        }
+      }
+    }, { prepend: true })
   },
 
   methods: {
@@ -177,7 +189,10 @@ export default {
       changeChoosenSettingsChannel: 'changeChoosenSettingsChannel',
       changeChoosenUserForSetting: 'changeChoosenUserForSetting',
       openOrCloseAcceptModal: 'openOrCloseAcceptModal',
-      openAcceptModal: 'openAcceptModal'
+      openAcceptModal: 'openAcceptModal',
+      acceptOrNotLeaveChannel: 'acceptOrNotLeaveChannel',
+      acceptOrNotEditChannel: 'acceptOrNotEditChannel',
+      acceptOrNotDeleteChannel: 'acceptOrNotDeleteChannel'
     }),
 
     async deleteChannel() {
@@ -216,14 +231,14 @@ export default {
 
     async openSmallFunctions(id, event) {
       this.closeModalAddUserOnChannel();
-      if(this.isAddFunctions) {
-        if(this.choosenUser == id) {
+      if (this.isAddFunctions) {
+        if (this.choosenUser == id) {
           this.closeSmallFunctions();
         } else {
           await this.closeSmallFunctions();
           this.openSmallFunctions(id, event);
         }
-        
+
       } else {
         this.locationSmallFunction(event.clientX, event.clientY, id)
         this.changeChoosenUserForSetting(id)
@@ -237,7 +252,7 @@ export default {
         this.isAddFunctions = true
         this.choosenUser = id
       }
-      
+
     },
 
     locationSmallFunction(x, y) {
@@ -276,7 +291,6 @@ export default {
     saveChanges() {
       this.changeChoosenSettingsChannel(this.channelName)
       let path = this.$route.fullPath.substring(1)
-      console.log(this.channelName);
       this.fetchData({url: path, method: 'post', body: {'name_channel': this.channelName}, token: this.token})
       this.offEdit();
     }
@@ -285,9 +299,10 @@ export default {
 </script>
 
 <style scoped>
-  .modal-enter-active {
+.modal-enter-active {
   animation: open 0.7s ease-in-out;
 }
+
 .modal-leave-active {
   animation: open 0.7s reverse ease-in-out;
 }
@@ -295,25 +310,26 @@ export default {
 .modalAddUser-enter-active {
   animation: openModalAddUser 0.7s ease-in-out;
 }
+
 .modalAddUser-leave-active {
   animation: openModalAddUser 0.7s reverse ease-in-out;
 }
 
-  @keyframes openModalAddUser {
-    0% {
-      max-height: 0;
-    }
-    100% {
-      max-height: 500px;
-    }
+@keyframes openModalAddUser {
+  0% {
+    max-height: 0;
   }
+  100% {
+    max-height: 500px;
+  }
+}
 
-    @keyframes open {
-    0% {
-      max-height: 0;
-    }
-    100% {
-      max-height: 250px;
-    }
+@keyframes open {
+  0% {
+    max-height: 0;
   }
+  100% {
+    max-height: 250px;
+  }
+}
 </style>
