@@ -149,6 +149,7 @@ export default {
           }
         } else if(mutation.type == 'acceptOrNotEditTask') {
           if(this.actions.isEditTask.isAccept) {
+            this.acceptOrNotEditTask(false);
             this.updateTask();
           }
         }
@@ -201,25 +202,9 @@ export default {
 
     ...mapMutations({
       openAcceptModal: 'openAcceptModal',
-      acceptOrNotDeleteTask: 'acceptOrNotDeleteTask'
+      acceptOrNotDeleteTask: 'acceptOrNotDeleteTask',
+      acceptOrNotEditTask: 'acceptOrNotEditTask'
     }),
-
-    unsubscribe() {
-      store.subscribe((mutation) => {
-        if (mutation.type == 'changeChoosenTask') {
-          this.task = {...mutation.payload}
-        } else if(mutation.type == 'acceptOrNotDeleteTask') {
-          if(this.actions.isDeleteTask.isAccept) {
-            this.acceptOrNotDeleteTask(false);
-            this.deleteTask();
-          }
-        } else if(mutation.type == 'acceptOrNotEditTask') {
-          if(this.actions.isEditTask.isAccept) {
-            this.updateTask();
-          }
-        }
-      })
-    },
 
     async deleteTask() {
       const deleteTaskUrl = (this.$route.fullPath + '/delete-task').slice(1);
@@ -243,10 +228,11 @@ export default {
 
     async updateTask() {
       if(this.isAuth) {
-        let dateStart = this.formatDate(true, this.task['date_start']);
+        let dateStart = this.formatDate(false, this.chooseDateTask);
         let timeStart = this.formatTime(this.task['date_start'])
         let date = dateStart + ' ' + timeStart;
         let path = this.$route.path.slice(1)
+        console.log(date);
 
         await this.fetchData({
           url: path,
@@ -280,6 +266,7 @@ export default {
     },
 
     chooseDate(date) {
+      console.log(date);
       this.chooseDateTask = {...date}
       this.isCalendar = false;
     },
